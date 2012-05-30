@@ -1,0 +1,35 @@
+*** toolchain/uClibc/uclibc.mk.orig	2012-03-21 14:10:41.000000000 -0700
+--- toolchain/uClibc/uclibc.mk	2012-03-21 15:46:10.000000000 -0700
+***************
+*** 453,466 ****
+  		PREFIX=$(HOST_DIR) \
+  		HOSTCC="$(HOSTCC)" \
+  		hostutils
+  	if [ -f $(UCLIBC_DIR)/utils/ldd.host ]; then \
+! 		install -D $(UCLIBC_DIR)/utils/ldd.host $(HOST_DIR)/usr/bin/ldd; \
+! 		ln -sf ldd $(HOST_DIR)/usr/bin/$(REAL_GNU_TARGET_NAME)-ldd; \
+  	fi
+  	if [ -f $(UCLIBC_DIR)/utils/ldconfig.host ]; then \
+! 		install -D $(UCLIBC_DIR)/utils/ldconfig.host $(HOST_DIR)/usr/bin/ldconfig; \
+! 		ln -sf ldconfig $(HOST_DIR)/usr/bin/$(REAL_GNU_TARGET_NAME)-ldconfig; \
+! 		ln -sf ldconfig $(HOST_DIR)/usr/bin/$(GNU_TARGET_NAME)-ldconfig; \
+  	fi
+  	touch -c $@
+  
+--- 453,468 ----
+  		PREFIX=$(HOST_DIR) \
+  		HOSTCC="$(HOSTCC)" \
+  		hostutils
++ #Till Straumann: do NOT install as 'ldd/ldconfig' since this may
++ #result in this ldd being used when the native/host ldd is wanted.
++ #Fixes a problem when configuring ncurses; uclibc's ldd produces
++ #output which is incompatible with ncurses-5.7 'configure'
+  	if [ -f $(UCLIBC_DIR)/utils/ldd.host ]; then \
+! 		install -D $(UCLIBC_DIR)/utils/ldd.host $(HOST_DIR)/usr/bin/$(REAL_GNU_TARGET_NAME)-ldd; \
+  	fi
+  	if [ -f $(UCLIBC_DIR)/utils/ldconfig.host ]; then \
+! 		install -D $(UCLIBC_DIR)/utils/ldconfig.host $(HOST_DIR)/usr/bin/$(REAL_GNU_TARGET_NAME)-ldconfig; \
+! 		ln -sf $(REAL_GNU_TARGET_NAME)-ldconfig $(HOST_DIR)/usr/bin/$(GNU_TARGET_NAME)-ldconfig; \
+  	fi
+  	touch -c $@
+  

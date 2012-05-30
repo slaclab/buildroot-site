@@ -1,0 +1,5 @@
+#!/bin/sh
+PARMS="";
+PARMS="$PARMS noapictimer";
+#PARMS="$PARMS console=ttyS0,9600";
+../wraplinux-1.7/wraplinux --output /remote/rtl.elf --elf --params "$PARMS" --initrd output/images/rootfs.ext2 output/images/bzImage
