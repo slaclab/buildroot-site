@@ -1,0 +1,9 @@
+*** target/Config.in.arch.orig	2011-11-03 10:46:18.000000000 -0600
+--- target/Config.in.arch	2011-11-03 11:13:43.000000000 -0600
+***************
+*** 712,714 ****
+--- 712,715 ----
+  	default sparchfleonv8	if BR2_sparc_sparchfleonv8
+  	default sparcsfleon	if BR2_sparc_sparcsfleon
+  	default sparcsfleonv8	if BR2_sparc_sparcsfleonv8
++ 	default 8540		if BR2_powerpc_8540

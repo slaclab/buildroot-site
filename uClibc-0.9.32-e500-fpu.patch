@@ -1,0 +1,28 @@
+*** uClibc-0.9.32/libm/powerpc/e500/fpu/Makefile.arch.orig	2011-10-18 19:34:41.000000000 -0500
+--- uClibc-0.9.32/libm/powerpc/e500/fpu/Makefile.arch	2011-10-18 20:41:09.000000000 -0500
+***************
+*** 6,13 ****
+--- 6,17 ----
+  #
+  
+  
++ ifeq ($(UCLIBC_HAS_FENV),y)
+  libm_ARCH_SRC:=$(wildcard $(libm_ARCH_fpu_DIR)/*.c)
+  libm_ARCH_OBJ:=$(patsubst $(libm_ARCH_fpu_DIR)/%.c,$(libm_ARCH_fpu_OUT)/%.o,$(libm_ARCH_SRC))
++ endif
++ 
++ CFLAGS-fe_nomask.c := $(CFLAGS-libm)
+  
+  libm_ARCH_OBJS:=$(libm_ARCH_OBJ)
+  
+*** uClibc-0.9.32/libm/powerpc/e500/Makefile.arch.orig	2011-10-18 20:39:16.000000000 -0500
+--- uClibc-0.9.32/libm/powerpc/e500/Makefile.arch	2011-10-18 20:39:26.000000000 -0500
+***************
+*** 6,10 ****
+--- 6,11 ----
+  #
+  
+  libm_ARCH_fpu_DIR := $(libm_SUBARCH_DIR)/fpu
++ libm_ARCH_fpu_OUT := $(libm_SUBARCH_OUT)/fpu
+  -include $(libm_ARCH_fpu_DIR)/Makefile.arch
+  

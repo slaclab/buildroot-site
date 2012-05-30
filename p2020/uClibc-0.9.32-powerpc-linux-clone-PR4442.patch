@@ -1,0 +1,19 @@
+*** uClibc-0.9.32/libc/sysdeps/linux/powerpc/clone.S.orig	2011-11-03 20:27:58.000000000 -0600
+--- uClibc-0.9.32/libc/sysdeps/linux/powerpc/clone.S	2011-11-03 20:28:06.000000000 -0600
+***************
+*** 51,57 ****
+  #ifdef RESET_PID
+  	stmw	r28,16(r1)
+  #else
+! # ifdef __ASSUME_FIXED_CLONE_SYSCALL
+  	stmw	r29,16(r1)
+  # else
+  	stmw	r30,16(r1)
+--- 51,57 ----
+  #ifdef RESET_PID
+  	stmw	r28,16(r1)
+  #else
+! # ifndef __ASSUME_FIXED_CLONE_SYSCALL
+  	stmw	r29,16(r1)
+  # else
+  	stmw	r30,16(r1)

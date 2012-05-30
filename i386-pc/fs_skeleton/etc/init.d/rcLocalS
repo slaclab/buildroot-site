@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ -n "$BOOTFILE" ] ; then
+	echo "Executing BOOTFILE: $BOOTFILE"
+	exec "$BOOTFILE"
+fi
+if [ -r /etc/bootfile ] ; then
+	BOOTFILE=`cat /etc/bootfile`
+	echo "Executing bootfile: $BOOTFILE"
+	exec "$BOOTFILE"
+fi
+echo "Executing bootfile FAILED"
+exit 1

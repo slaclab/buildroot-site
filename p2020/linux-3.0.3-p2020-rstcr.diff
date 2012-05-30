@@ -1,0 +1,29 @@
+*** linux-3.0.3-rt12/arch/powerpc/sysdev/fsl_soc.c.orig	2011-11-03 20:24:12.000000000 -0600
+--- linux-3.0.3-rt12/arch/powerpc/sysdev/fsl_soc.c	2011-11-03 20:25:54.000000000 -0600
+***************
+*** 240,248 ****
+  void fsl_rstcr_restart(char *cmd)
+  {
+  	local_irq_disable();
+! 	if (rstcr)
+  		/* set reset control register */
+  		out_be32(rstcr, 0x2);	/* HRESET_REQ */
+  
+  	while (1) ;
+  }
+--- 240,254 ----
+  void fsl_rstcr_restart(char *cmd)
+  {
+  	local_irq_disable();
+! 	if (rstcr) {
+  		/* set reset control register */
+  		out_be32(rstcr, 0x2);	/* HRESET_REQ */
++ 		/* P2020 seems to reset only if we pull the bit low and
++ 		 * only if it has been high for a while
++ 		 */
++ 		udelay(200000);
++ 		out_be32(rstcr, 0x0);
++ 	}
+  
+  	while (1) ;
+  }

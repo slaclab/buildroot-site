@@ -1,0 +1,20 @@
+T.S.  2012/05/23
+
+ - unpack buildroot source
+ - cd buildroot-<version>
+ - symlink to site-specific config files
+
+    ln -s ../lcls/<arch> site
+
+ - apply buildroot patches from site/ they are
+   all named buildroot-xxx.diff
+
+ - copy buildroot config file
+
+    cp site/br-<version>.config .config
+
+ - build (make sure CWD is neither in PATH nor in LD_LIBRARY_PATH)
+
+    make
+
+
