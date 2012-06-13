@@ -1,0 +1,21 @@
+*** package/dropbear/dropbear.mk.orig	2012-06-10 11:27:44.094687000 -0700
+--- package/dropbear/dropbear.mk	2012-06-10 11:28:54.530816000 -0700
+***************
+*** 4,10 ****
+  #
+  #############################################################
+  
+! DROPBEAR_VERSION = 2012.55
+  DROPBEAR_SITE = http://matt.ucc.asn.au/dropbear/releases
+  DROPBEAR_TARGET_BINS = dbclient dropbearkey dropbearconvert scp ssh
+  DROPBEAR_MAKE =	$(MAKE) MULTI=1 SCPPROGRESS=1 \
+--- 4,12 ----
+  #
+  #############################################################
+  
+! # dropbear snaphot downloaded from mercurial site and
+! # renamed 'tip.tar.gz' -> 'dropbear-<fingerprint>.tar.gz'
+! DROPBEAR_VERSION = 983a817f8e41
+  DROPBEAR_SITE = http://matt.ucc.asn.au/dropbear/releases
+  DROPBEAR_TARGET_BINS = dbclient dropbearkey dropbearconvert scp ssh
+  DROPBEAR_MAKE =	$(MAKE) MULTI=1 SCPPROGRESS=1 \
