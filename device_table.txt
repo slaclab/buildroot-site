@@ -12,6 +12,8 @@
 /home/laci				d	2755	8412	2211	-	-	-	-	-
 /etc/shadow				f	600	0	0	-	-	-	-	-
 /etc/passwd				f	644	0	0	-	-	-	-	-
+/etc/dropbear/dropbear_dss_host_key		f	600	0	0	-	-	-	-	-
+/etc/dropbear/dropbear_rsa_host_key		f	600	0	0	-	-	-	-	-
 /etc/network/if-up.d			d	755	0	0	-	-	-	-	-
 /etc/network/if-pre-up.d		d	755	0	0	-	-	-	-	-
 /etc/network/if-down.d			d	755	0	0	-	-	-	-	-
