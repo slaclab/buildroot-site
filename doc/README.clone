@@ -13,8 +13,22 @@ T.S.  2012/05/23
 
     cp site/br-<version>.config .config
 
+ - copy package patches to 'package' area, i.e., 
+   copy   
+   
+     xyz-blah-blah.patch -> package/xyz/xyz-blah-blah.patch
+
  - build (make sure CWD is neither in PATH nor in LD_LIBRARY_PATH)
 
     make
 
+ NOTE: if your main build machine has no access to the internet then
+       you can use the following steps (after copying the buildroot
+       config file):
+
+         1. log onto a machine *with* internet access.
+         2. chdir to buildroot top (where buildroot .config file sits)
+         3. type 'make source' (this just downloads everything needed)
+         4. log out, back into your build machine
+         5. type 'make'
 
