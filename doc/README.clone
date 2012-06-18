@@ -6,6 +6,9 @@ T.S.  2012/05/23
 
     ln -s ../lcls/<arch> site
 
+   NOTE: <arch> other than i386-pc are not up-to-date and
+         currently UNSUPPORTED.
+
  - apply buildroot patches from site/ they are
    all named buildroot-xxx.diff
 
