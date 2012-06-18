@@ -1,5 +1,5 @@
-*** drivers/uio/uio_pci_generic.c.orig	2012-03-23 13:54:45.000000000 -0700
---- drivers/uio/uio_pci_generic.c	2012-06-14 11:32:00.633008000 -0700
+*** linux-3.2.13/drivers/uio/uio_pci_generic.c.orig	2012-03-23 13:54:45.000000000 -0700
+--- linux-3.2.13/drivers/uio/uio_pci_generic.c	2012-06-14 11:32:00.633008000 -0700
 ***************
 *** 27,33 ****
   
