@@ -16,7 +16,7 @@ T.S.  2012/05/23
  - copy package patches to 'package' area, i.e., 
    copy   
    
-     xyz-blah-blah.patch -> package/xyz/xyz-blah-blah.patch
+     pkg-patches/xyz-blah-blah.patch -> package/xyz/xyz-blah-blah.patch
 
  - build (make sure CWD is neither in PATH nor in LD_LIBRARY_PATH)
 
