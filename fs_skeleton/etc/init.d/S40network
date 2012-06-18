@@ -12,6 +12,24 @@ if [ -n "$BOOTIF_MAC" ] && ! grep -q BOOTIF_MAC /etc/network/interfaces ; then
 	if [ -n "$ROOTPATH" ] ; then
 		echo "  ROOTPATH $ROOTPATH" >> /etc/network/interfaces
 	fi
+else
+# fall back on configuring all know NICs with dhcp
+	IFLST=`ifconfig -a | awk '/Ethernet/{printf("%s ",$1)}'`
+	for i in $IFLST; do
+		if ! grep -q "$i" /etc/network/interfaces ; then
+			echo "auto $i" >> /etc/network/interfaces
+			echo "iface $i inet dhcp" >> /etc/network/interfaces
+		fi
+	done
+	if [ -n "$ROOTPATH" ] ; then
+		mntpt=`echo "$ROOTPATH" | awk 'BEGIN{FS=":"}{print $3}'`;
+		fsline=`echo "$ROOTPATH" | awk 'BEGIN{FS=":"}{print $1":"$2,$3,"nfs","ro,nolock",0,0}'`;
+		# make sure mountpoint exists
+		mkdir -p "$mntpt"
+		if ! grep -q "$fsline" /etc/fstab ; then
+			echo "$fsline" >> /etc/fstab
+		fi
+	fi	
 fi
 
 case "$1" in
