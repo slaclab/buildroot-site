@@ -49,9 +49,16 @@ case "$1" in
 				echo "setting NTP servers in $NTPD_CONF: $ntpsrv"
 				sed -i -e 's/NTPSERVERS.*/NTPSERVERS="'"$ntpsrv"'"/g' $NTPD_CONF
 			fi
+			NTPSERVERS="$ntpsrv"
+		else
+			if [ -r $NTPD_CONF ] ; then
+				NTPSERVERS="`( . $NTPD_CONF; echo -n $NTPSERVERS)`"
+			fi
+		fi
+		if [ -n "$NTPSERVERS" ] ; then
 			echo "creating /etc/ntp.conf"
 			rm -f /etc/ntp.conf
-			for i in "$ntpsrv" ; do
+			for i in $NTPSERVERS ; do
 				echo "server $i" >> /etc/ntp.conf
 			done
 		fi
