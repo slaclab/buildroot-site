@@ -37,9 +37,11 @@ case "$1" in
  	echo "Starting network..."
 
 	/sbin/ifup -a
+	/bin/mount -a
 	;;
   stop)
 	echo -n "Stopping network..."
+	/bin/umount -f -t nfs
 	/sbin/ifdown -a
 	;;
   restart|reload)
