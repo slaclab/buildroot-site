@@ -13,6 +13,21 @@
 # action    == one of sysinit, respawn, askfirst, wait, and once
 # process   == program to run
 
+# IMPORTANT NOTE
+# ==============
+# !!! No two lines can have the exactly same command string !!!
+# busybox 'init' collapses such entries and leaves only the
+# last occurrence:
+#
+# e.g. 
+#  ::sysinit:/bin/cmd -opt
+#  ::sysinit:/bin/setup
+#  ::sysinit:/bin/cmd -opt
+#
+# would NOT execute the first 'cmd'. It is enough to 
+# let the two lines differ a little bit, however (e.g.
+# extra space)...
+
 # Startup the system
 null::sysinit:/bin/mount -t proc proc /proc
 null::sysinit:/bin/mount -o remount,rw / # REMOUNT_ROOTFS_RW
@@ -22,8 +37,6 @@ null::sysinit:/bin/mount -a
 null::sysinit:/bin/hostname -F /etc/hostname
 # now run any rc scripts
 ::sysinit:/etc/init.d/rcS
-# mount network FS (after networking is up)
-::sysinit:/bin/mount -a
 
 ::once:/etc/init.d/rcLocalS
 
@@ -34,8 +47,7 @@ ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
 ::ctrlaltdel:/sbin/reboot
 
 # Stuff to do before rebooting
-null::shutdown:/usr/bin/killall klogd
-null::shutdown:/usr/bin/killall syslogd
+null::shutdown:/etc/init.d/rcK
 null::shutdown:/bin/umount -a -r
 null::shutdown:/sbin/swapoff -a
 
