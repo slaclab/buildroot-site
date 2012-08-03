@@ -19,17 +19,12 @@ else
 		if ! grep -q "$i" /etc/network/interfaces ; then
 			echo "auto $i" >> /etc/network/interfaces
 			echo "iface $i inet dhcp" >> /etc/network/interfaces
+			# override ROOTPATH for every IF
+			if [ -n "$ROOTPATH" ] ; then
+				echo "  ROOTPATH $ROOTPATH" >> /etc/network/interfaces
+			fi
 		fi
 	done
-	if [ -n "$ROOTPATH" ] ; then
-		mntpt=`echo "$ROOTPATH" | awk 'BEGIN{FS=":"}{print $3}'`;
-		fsline=`echo "$ROOTPATH" | awk 'BEGIN{FS=":"}{print $1":"$2,$3,"nfs","ro,nolock",0,0}'`;
-		# make sure mountpoint exists
-		mkdir -p "$mntpt"
-		if ! grep -q "$fsline" /etc/fstab ; then
-			echo "$fsline" >> /etc/fstab
-		fi
-	fi	
 fi
 
 case "$1" in
