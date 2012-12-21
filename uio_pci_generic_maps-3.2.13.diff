@@ -1,5 +1,5 @@
-*** linux-3.2.13/drivers/uio/uio_pci_generic.c.orig	2012-03-23 13:54:45.000000000 -0700
---- linux-3.2.13/drivers/uio/uio_pci_generic.c	2012-06-14 11:32:00.633008000 -0700
+*** linux-3.2.13/drivers/uio/uio_pci_generic.c.orig	2012-12-21 09:47:28.290592000 -0800
+--- linux-3.2.13/drivers/uio/uio_pci_generic.c	2012-12-21 09:51:21.389282000 -0800
 ***************
 *** 27,33 ****
   
@@ -18,8 +18,8 @@
   struct uio_pci_generic_dev {
   	struct uio_info info;
 ***************
-*** 118,123 ****
---- 118,193 ----
+*** 118,128 ****
+--- 118,201 ----
   	return err;
   }
   
@@ -96,9 +96,20 @@
   static int __devinit probe(struct pci_dev *pdev,
   			   const struct pci_device_id *id)
   {
+  	struct uio_pci_generic_dev *gdev;
+  	int err;
++ #ifndef TSILL
++ 	int irq;
++ #endif
+  
+  	err = pci_enable_device(pdev);
+  	if (err) {
 ***************
-*** 134,144 ****
-  	if (!pdev->irq) {
+*** 131,144 ****
+  		return err;
+  	}
+  
+! 	if (!pdev->irq) {
   		dev_warn(&pdev->dev, "No IRQ assigned to device: "
   			 "no support for interrupts?\n");
   		pci_disable_device(pdev);
@@ -109,8 +120,11 @@
   	if (err)
   		goto err_verify;
   
---- 204,223 ----
-  	if (!pdev->irq) {
+--- 204,233 ----
+  		return err;
+  	}
+  
+! 	if (!(irq = pdev->irq)) {
   		dev_warn(&pdev->dev, "No IRQ assigned to device: "
   			 "no support for interrupts?\n");
 + 		dev_warn(&pdev->dev, "TSILL phase 1.\n");
@@ -123,16 +137,45 @@
 + #endif
   	}
 ! #ifndef TSILL
-! 	else
+! 	else {
 ! #endif
   	err = verify_pci_2_3(pdev);
++ #ifndef TSILL
++ 		dev_warn(&pdev->dev, "Not PCI-2.3 compliant! "
++ 			 "no support for interrupts!\n");
++ 		err = 0;
++ 		irq = 0;
++ 	}
++ #endif
 + 
   	if (err)
   		goto err_verify;
   
 ***************
-*** 155,166 ****
---- 234,248 ----
+*** 150,166 ****
+  
+  	gdev->info.name = "uio_pci_generic";
+  	gdev->info.version = DRIVER_VERSION;
+! 	gdev->info.irq = pdev->irq;
+  	gdev->info.irq_flags = IRQF_SHARED;
+  	gdev->info.handler = irqhandler;
+  	gdev->pdev = pdev;
+  
+  	if (uio_register_device(&pdev->dev, &gdev->info))
+  		goto err_register;
+  	pci_set_drvdata(pdev, gdev);
+  
+  	return 0;
+  err_register:
+  	kfree(gdev);
+  err_alloc:
+  err_verify:
+--- 239,258 ----
+  
+  	gdev->info.name = "uio_pci_generic";
+  	gdev->info.version = DRIVER_VERSION;
+! 	gdev->info.irq = irq;
+  	gdev->info.irq_flags = IRQF_SHARED;
   	gdev->info.handler = irqhandler;
   	gdev->pdev = pdev;
   
@@ -150,7 +193,7 @@
   err_verify:
 ***************
 *** 174,179 ****
---- 256,262 ----
+--- 266,272 ----
   
   	uio_unregister_device(&gdev->info);
   	pci_disable_device(pdev);
