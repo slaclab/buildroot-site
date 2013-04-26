@@ -1,4 +1,9 @@
 #!/bin/sh
+if [ -n "$BOOTCMD" ] ; then
+    echo "Evaluating BOOTCMD: sh -c \"$BOOTCMD\""
+	/bin/sh -c "$BOOTCMD"
+	# Continue here and let then also specify a BOOTFILE
+fi
 if [ -n "$BOOTFILE" ] ; then
 	echo "Executing BOOTFILE: $BOOTFILE"
 	exec "$BOOTFILE"
