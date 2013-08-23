@@ -1,6 +1,6 @@
 buildroot for ppc/p2020-comx:
 
- - uClibc 0.9.32 needs patch; all uClibc patches must
+ - uClibc 0.9.32 needs patches; all uClibc patches must
    have a name uClibc-0.9.32-blah-blah-blah.patch
    and be copied to <buildroot_top>/toolchain/uClibc
  - buildroot patch (or extra gcc config arg: --with-cpu=8540)
