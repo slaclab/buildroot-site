@@ -1,33 +1,168 @@
-T.S.  2012/05/23
+T.S.  2014/03/07
 
- - unpack buildroot source
- - cd buildroot-<version>
- - symlink to site-specific config files
+Directory Structure
+-------------------
 
-    ln -s ../lcls/<arch> site
+TOP Directory
+- - - - - - -
 
-   NOTE: <arch> other than i386-pc are not up-to-date and
-         currently UNSUPPORTED.
+I like to structure my buildroot tree in the following way:
+
+At the top I like to have a buildroot-version specific directory:
+
+	buildroot-<version>/ e.g.,  buildroot-2012.02/
+
+Inside the top directory there are three principal subdirectories:
+
+1. DOWNLOAD Subdirectory
+- - - - - - - - - - - - -
+
+    download/
+
+is where the build process stores downloaded sources. It is handy
+to keep them there so that if you rebuild everything you don't have
+to download everything again. Also, if you have different configurations
+of buildroot then they can all share the same downloads.
+
+2. BUILDROOT Subdirectory
+- - - - - - - - - - - - -
+
+   buildroot[-<config>]/
+
+This is the top directory of 'buildroot' itself. Everything that
+buildroot builds ends up somewhere underneath this directory.
+
+If you unpack the buildroot distribution in the <TOP> directory
+then the unpack procedure creates a 'buildroot-<version>' directory.
+You can leave it like that but since I already name my TOP after
+the version I usually rename the buildroot top to just 'buildroot'
+or 'buildroot-x86'.
+
+It should be noted that buildroot does not currently support
+building different configurations (e.g., different targets
+or kernel versions). Therefore you must maintain/build different
+configurations side-by-side. I do this by unpacking the buildroot
+source multiple times and renaming the top directories after
+the configuration. E.g., if I have stable and development
+versions for x86 (assume version 2012.02) then I could have
+
+  buildroot-2012.02/download/
+  buildroot-2012.02/buildroot-x86-devl/
+  buildroot-2012.02/buildroot-x86/
+
+If you only build for the same target architecture then you
+could also omit the 'x86'. Nothing about these names is special
+or required.
+
+3. SLAC/SITE Subdirectory
+- - - - - - - - - - - - -
+
+All the site specific modifications of buildroot and other
+software as well as configuration files for buildroot, busybox,
+kernel etc. are maintained in git and cloned into a
+
+  site-top/
+
+subdirectory. If you want different builds to use different
+branches or releases of site-top/ then there can be multiple
+clones, e.g. a stable and development one:
+
+  site-top/
+  site-top-devl/
+
+4. Symlink Connecting Buildroot to Site-Top
+- - - - - - - - - - - - - - - - - - - - - - 
+Each build/configuration is connected to a 'site-top' by
+means of a symlink. E.g., for the aforementioned stable
+and development builds there could be
+
+  buildroot/site       -> ../site-top/i386-pc/
+  buildroot-devl/site  -> ../site-top-devl/i386-pc/
+
+As you see, the 'site' symlink points to a target-architecture
+specific subdirectory of 'site-top'. Even though we currently
+only support i386-pc this is a provision for supporting different
+architectures in the future.
+
+INSTALLATION
+============
+
+All the following steps assume version 2012.02. If you are using
+a different version, please modify the instructions accordingly.
+
+1. Preparation
+--------------
+
+Create the TOP directory and chdir there:
+
+  mkdir <prefix>/buildroot-2012.02
+  cd    <prefix>/buildroot-2012.02
+
+Create 'download' directory:
+
+  mkdir download
+
+Download buildroot 
+
+  wget -P download/ http://buildroot.uclibc.org/downloads/buildroot-2012.02.tar.bz2
+
+Unpack
+
+   tar xfj download/buildroot-2012.02.tar.bz2
+
+You might now want to rename (since the version number is already in TOP)
+
+   mv buildroot-2012.02  buildroot
+
+Repeat the 'unpack' and 'rename' steps if you want to build
+multiple configurations.
+
+2. Create Symlink to Site-Top
+-----------------------------
+Clone site-top
+
+   git clone ssh://<slac-machine>//afs/slac/package/linuxRT/git/buildroot-site.git site-top
+
+Create symlink to site-specific config files, patches etc.
+
+   ln -s ../site-top/<arch>/ buildroot/site
+
+NOTE: <arch> other than i386-pc are not up-to-date and
+      currently UNSUPPORTED.
+
+3. Apply Patches
+----------------
+
+First, change the working-directory into the buildroot source directory.
+
+  cd buildroot/
+
+Then
 
  - apply buildroot patches from site/ they are
    all named buildroot-xxx.diff
 
+      cat site/buildroot-*.diff | patch -p0
+
  - copy buildroot config file
 
-    cp site/br-<version>.config .config
+      cp site/br-<version>.config .config
 
- - copy package patches to 'package' area, i.e., 
-   copy   
+ - copy package patches to 'package' area using the utility 
+   script 'install-pkg-patches.sh':
    
-     pkg-patches/xyz-blah-blah.patch -> package/xyz/xyz-blah-blah.patch
+	 site/install-pkg-patches.sh
 
- - build (make sure CWD is neither in PATH nor in LD_LIBRARY_PATH)
+4. Build
+--------
+
+Make sure CWD is neither in PATH nor in LD_LIBRARY_PATH and issue
 
     make
 
- NOTE: if your main build machine has no access to the internet then
-       you can use the following steps (after copying the buildroot
-       config file):
+NOTE: if your main build machine has no access to the internet then
+      you can use the following steps (after copying the buildroot
+      config file):
 
          1. log onto a machine *with* internet access.
          2. chdir to buildroot top (where buildroot .config file sits)
