@@ -1,4 +1,4 @@
-T.S.  2014/03/07
+T.S.  2014/03/12
 
 Directory Structure
 -------------------
@@ -121,7 +121,10 @@ multiple configurations.
 -----------------------------
 Clone site-top
 
-   git clone ssh://<slac-machine>//afs/slac/package/linuxRT/git/buildroot-site.git site-top
+NOTE: you need to clone the specific branch matching your buildroot release!
+      The 'master' branch is empty...
+
+   git clone -b br-2012.02 ssh://<slac-machine>//afs/slac/package/linuxRT/git/buildroot-site.git site-top
 
 Create symlink to site-specific config files, patches etc.
 
