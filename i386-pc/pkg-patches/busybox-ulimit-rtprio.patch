@@ -3,61 +3,61 @@
    for rtprio, memlock, coredump -- however, the corresponding soft
    limits are still low/zero.
 T.S, 2012/3/30
-*** busybox-1.18.5/shell/shell_common.c.orig	2012-04-02 09:45:21.000000000 -0500
---- busybox-1.18.5/shell/shell_common.c	2012-04-02 10:14:54.000000000 -0500
+*** busybox-1.22.1/init/init.c	2014-03-12 19:50:38.746030667 -0700
+--- busybox-1.22.1/init/init.c.orig	2014-01-09 10:15:44.000000000 -0800
 ***************
-*** 286,291 ****
---- 286,294 ----
-  #ifdef RLIMIT_LOCKS
-  	{ RLIMIT_LOCKS,		0,	'w',	"locks" },
-  #endif
-+ #ifdef RLIMIT_RTPRIO
-+ 	{ RLIMIT_RTPRIO,	0,	'r',	"real-time priority" },
-+ #endif
-  };
-  
-  enum {
-***************
-*** 328,333 ****
---- 331,339 ----
-  #ifdef RLIMIT_LOCKS
-  			"w::"
-  #endif
-+ #ifdef RLIMIT_RTPRIO
-+ 			"r::"
-+ #endif
-  			;
-  
-  static void printlim(unsigned opts, const struct rlimit *limit,
-*** busybox-1.18.5/init/init.c.orig	2012-04-02 09:50:30.000000000 -0500
---- busybox-1.18.5/init/init.c	2012-04-02 10:44:12.000000000 -0500
-***************
-*** 491,496 ****
---- 491,517 ----
+*** 507,533 ****
   			continue;
   	}
   
-+ 	/* Set some hard limits to 'infinity' (for everyone to inherit).
-+ 	 * We want real-time related stuff to be used by everyone (but
-+ 	 * not enabled unless soft-limit is increased from the shell).
-+ 	 * We also set coredump hard-limit here so coredumps may be
-+ 	 * enabled by everyone.
-+ 	 * T.S; 2012/3/30.
-+ 	 */
-+ 	{
-+ 		struct rlimit limit;
-+ 
-+ 		/* Keep current soft limit for RLIMIT_MEMLOCK */
-+ 		if ( 0 == getrlimit( RLIMIT_MEMLOCK, &limit ) ) {
-+ 			limit.rlim_max = RLIM_INFINITY;
-+ 			setrlimit( RLIMIT_MEMLOCK, &limit );
-+ 		}
-+ 		limit.rlim_cur = 0;
-+ 		limit.rlim_max = RLIM_INFINITY;
-+ 		setrlimit( RLIMIT_RTPRIO, &limit );
-+ 		setrlimit( RLIMIT_CORE,   &limit );
-+ 	}
-+ 
+- 	/* Set some hard limits to 'infinity' (for everyone to inherit).
+- 	 * We want real-time related stuff to be used by everyone (but
+- 	 * not enabled unless soft-limit is increased from the shell).
+- 	 * We also set coredump hard-limit here so coredumps may be
+- 	 * enabled by everyone.
+- 	 * T.S; 2012/3/30.
+- 	 */
+- 	{
+- 		struct rlimit limit;
+- 
+- 		/* Keep current soft limit for RLIMIT_MEMLOCK */
+- 		if ( 0 == getrlimit( RLIMIT_MEMLOCK, &limit ) ) {
+- 			limit.rlim_max = RLIM_INFINITY;
+- 			setrlimit( RLIMIT_MEMLOCK, &limit );
+- 		}
+- 		limit.rlim_cur = 0;
+- 		limit.rlim_max = RLIM_INFINITY;
+- 		setrlimit( RLIMIT_RTPRIO, &limit );
+- 		setrlimit( RLIMIT_CORE,   &limit );
+- 	}
+- 
   	/*
   	 * When a file named /.init_enable_core exists, setrlimit is called
   	 * before processes are spawned to set core file size as unlimited.
+--- 507,512 ----
+*** busybox-1.22.1/shell/shell_common.c	2014-03-12 19:50:38.746030667 -0700
+--- busybox-1.22.1/shell/shell_common.c.orig	2014-01-09 10:15:44.000000000 -0800
+***************
+*** 320,328 ****
+  #ifdef RLIMIT_RTPRIO
+  	{ RLIMIT_RTPRIO,	0,	'r',	"real-time priority" },
+  #endif
+- #ifdef RLIMIT_RTPRIO
+- 	{ RLIMIT_RTPRIO,	0,	'r',	"real-time priority" },
+- #endif
+  };
+  
+  enum {
+--- 320,325 ----
+***************
+*** 370,378 ****
+  #endif
+  #ifdef RLIMIT_RTPRIO
+  			"r::"
+- #endif
+- #ifdef RLIMIT_RTPRIO
+- 			"r::"
+  #endif
+  			;
+  
+--- 367,372 ----
