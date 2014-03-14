@@ -5,40 +5,25 @@ with this limitation.
 
 T. Straumann, 8/24/2013
 
-*** package/ncurses/ncurses.mk.orig	2013-08-24 09:49:44.000000002 -0700
---- package/ncurses/ncurses.mk	2013-08-24 09:56:24.000000002 -0700
+*** package/ncurses/ncurses.mk.orig	2014-03-12 10:15:36.264012959 -0700
+--- package/ncurses/ncurses.mk	2014-03-12 10:17:13.869124794 -0700
 ***************
-*** 42,48 ****
+*** 25,30 ****
+--- 25,31 ----
+  	--disable-rpath \
+  	--disable-rpath-hack \
+  	--enable-echo \
++ 	--enable-symlinks\
   	--enable-const \
   	--enable-overwrite \
-  	--enable-broken_linker \
-! 	--disable-static
-  
-  ifneq ($(BR2_ENABLE_DEBUG),y)
-  NCURSES_CONF_OPT += --without-debug
---- 42,49 ----
-  	--enable-const \
-  	--enable-overwrite \
-  	--enable-broken_linker \
-! 	--disable-static \
-! 	--enable-symlinks
-  
-  ifneq ($(BR2_ENABLE_DEBUG),y)
-  NCURSES_CONF_OPT += --without-debug
+  	--enable-pc-files \
 ***************
-*** 133,139 ****
-  HOST_NCURSES_DEPENDENCIES =
+*** 115,120 ****
+--- 116,122 ----
+  	--with-shared --without-gpm \
+  	--without-manpages \
+  	--without-cxx \
++ 	--enable-symlinks \
+  	--without-cxx-binding \
+  	--without-ada
   
-  HOST_NCURSES_CONF_OPT = \
-! 	--without-shared --without-gpm
-  
-  $(eval $(call AUTOTARGETS))
-  $(eval $(call AUTOTARGETS,host))
---- 134,140 ----
-  HOST_NCURSES_DEPENDENCIES =
-  
-  HOST_NCURSES_CONF_OPT = \
-! 	--without-shared --without-gpm --enable-symlinks
-  
-  $(eval $(call AUTOTARGETS))
-  $(eval $(call AUTOTARGETS,host))

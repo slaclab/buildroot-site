@@ -17842,16 +17842,16 @@ diff -crN package/ipmitool.orig/ipmitool.mk package/ipmitool/ipmitool.mk
 + 	rm -f $(TARGET_DIR)/usr/bin/ipmitool
 + endef
 + 
-+ $(eval $(call AUTOTARGETS))
-*** package/Config.in.orig	2012-08-06 10:18:15.915588000 -0700
---- package/Config.in	2012-08-06 10:19:16.781568000 -0700
++ $(eval $(autotools-package))
+*** package/Config.in.orig	2014-02-27 12:51:23.000000000 -0800
+--- package/Config.in	2014-03-12 10:19:58.820237101 -0700
 ***************
-*** 188,193 ****
---- 188,194 ----
-  source "package/input-event-daemon/Config.in"
+*** 299,304 ****
+--- 299,305 ----
   source "package/input-tools/Config.in"
+  source "package/intel-microcode/Config.in"
   source "package/iostat/Config.in"
 + source "package/ipmitool/Config.in"
   source "package/irda-utils/Config.in"
+  source "package/iucode-tool/Config.in"
   source "package/kbd/Config.in"
-  source "package/linux-firmware/Config.in"

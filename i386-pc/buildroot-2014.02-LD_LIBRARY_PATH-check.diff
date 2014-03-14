@@ -3,33 +3,33 @@ or LD_LIBRARY_PATH.
 
 T. Straumann, 5/29/2012
 
-*** support/dependencies/dependencies.sh.orig	2012-05-29 18:06:39.000000000 -0700
---- support/dependencies/dependencies.sh	2012-05-29 18:13:20.000000000 -0700
+*** support/dependencies/dependencies.sh.orig	2014-03-12 09:54:28.978235922 -0700
+--- support/dependencies/dependencies.sh	2014-03-12 09:58:01.755654785 -0700
 ***************
 *** 15,22 ****
 --- 15,25 ----
   # try not to rely on egrep..
   if test -n "$LD_LIBRARY_PATH" ; then
-  	/bin/echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | /bin/grep ':\.:' >/dev/null 2>&1 ||
-+ 	/bin/echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | /bin/grep '::' >/dev/null 2>&1 ||
-  	/bin/echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | /bin/grep 'TRiGGER_start\.:' >/dev/null 2>&1 ||
-+ 	/bin/echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | /bin/grep 'TRiGGER_start:' >/dev/null 2>&1 ||
-  	/bin/echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | /bin/grep ':\.TRiGGER_end' >/dev/null 2>&1 ||
-+ 	/bin/echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | /bin/grep ':TRiGGER_end' >/dev/null 2>&1 ||
-  	/bin/echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | /bin/grep 'TRiGGER_start\.TRiGGER_end' >/dev/null 2>&1
+  	echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | grep ':\.:' >/dev/null 2>&1 ||
++ 	echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | grep '::' >/dev/null 2>&1 ||
+  	echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | grep 'TRiGGER_start\.:' >/dev/null 2>&1 ||
++ 	echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | grep 'TRiGGER_start:' >/dev/null 2>&1 ||
+  	echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | grep ':\.TRiGGER_end' >/dev/null 2>&1 ||
++ 	echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | grep ':TRiGGER_end' >/dev/null 2>&1 ||
+  	echo TRiGGER_start"$LD_LIBRARY_PATH"TRiGGER_end | grep 'TRiGGER_start\.TRiGGER_end' >/dev/null 2>&1
   	if test $? = 0; then
-  		/bin/echo -e "\nYou seem to have the current working directory in your"
+  		echo
 ***************
-*** 30,37 ****
---- 33,43 ----
+*** 31,38 ****
+--- 34,44 ----
   # try not to rely on egrep..
   if test -n "$PATH" ; then
-  	/bin/echo TRiGGER_start"$PATH"TRiGGER_end | /bin/grep ':\.:' >/dev/null 2>&1 ||
-+ 	/bin/echo TRiGGER_start"$PATH"TRiGGER_end | /bin/grep '::' >/dev/null 2>&1 ||
-  	/bin/echo TRiGGER_start"$PATH"TRiGGER_end | /bin/grep 'TRiGGER_start\.:' >/dev/null 2>&1 ||
-+ 	/bin/echo TRiGGER_start"$PATH"TRiGGER_end | /bin/grep 'TRiGGER_start:' >/dev/null 2>&1 ||
-  	/bin/echo TRiGGER_start"$PATH"TRiGGER_end | /bin/grep ':\.TRiGGER_end' >/dev/null 2>&1 ||
-+ 	/bin/echo TRiGGER_start"$PATH"TRiGGER_end | /bin/grep ':TRiGGER_end' >/dev/null 2>&1 ||
-  	/bin/echo TRiGGER_start"$PATH"TRiGGER_end | /bin/grep 'TRiGGER_start\.TRiGGER_end' >/dev/null 2>&1
+  	echo TRiGGER_start"$PATH"TRiGGER_end | grep ':\.:' >/dev/null 2>&1 ||
++ 	echo TRiGGER_start"$PATH"TRiGGER_end | grep '::' >/dev/null 2>&1 ||
+  	echo TRiGGER_start"$PATH"TRiGGER_end | grep 'TRiGGER_start\.:' >/dev/null 2>&1 ||
++ 	echo TRiGGER_start"$PATH"TRiGGER_end | grep 'TRiGGER_start:' >/dev/null 2>&1 ||
+  	echo TRiGGER_start"$PATH"TRiGGER_end | grep ':\.TRiGGER_end' >/dev/null 2>&1 ||
++ 	echo TRiGGER_start"$PATH"TRiGGER_end | grep ':TRiGGER_end' >/dev/null 2>&1 ||
+  	echo TRiGGER_start"$PATH"TRiGGER_end | grep 'TRiGGER_start\.TRiGGER_end' >/dev/null 2>&1
   	if test $? = 0; then
-  		/bin/echo -e "\nYou seem to have the current working directory in your"
+  		echo
