@@ -10,6 +10,7 @@
 /tmp					d	1777	0	0	-	-	-	-	-
 /etc					d	755	0	0	-	-	-	-	-
 /home/laci				d	2755	8412	2211	-	-	-	-	-
+/home/spear				d	2755	7753	1080	-	-	-	-	-
 /etc/shadow				f	600	0	0	-	-	-	-	-
 /etc/passwd				f	644	0	0	-	-	-	-	-
 /etc/dropbear/dropbear_dss_host_key		f	600	0	0	-	-	-	-	-
