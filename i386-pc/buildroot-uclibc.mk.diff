@@ -1,0 +1,45 @@
+*** package/uclibc/uclibc.mk.orig	2014-09-01 04:20:56.000000000 -0700
+--- package/uclibc/uclibc.mk	2014-09-15 10:04:48.000000000 -0700
+***************
+*** 43,49 ****
+  		$(UCLIBC_MAKE_FLAGS) \
+  		PREFIX=$(STAGING_DIR) \
+  		DEVEL_PREFIX=/usr/ \
+! 		RUNTIME_PREFIX=$(STAGING_DIR)/ \
+  
+  UCLIBC_TARGET_ARCH = $(call qstrip,$(BR2_UCLIBC_TARGET_ARCH))
+  
+--- 43,49 ----
+  		$(UCLIBC_MAKE_FLAGS) \
+  		PREFIX=$(STAGING_DIR) \
+  		DEVEL_PREFIX=/usr/ \
+! 		RUNTIME_PREFIX=$(TARGET_DIR)/ \
+  
+  UCLIBC_TARGET_ARCH = $(call qstrip,$(BR2_UCLIBC_TARGET_ARCH))
+  
+***************
+*** 516,525 ****
+  # STATIC has no ld* tools, only getconf
+  ifeq ($(BR2_PREFER_STATIC_LIB),)
+  define UCLIBC_INSTALL_UTILS_STAGING
+! 	$(INSTALL) -D -m 0755 $(@D)/utils/ldd.host $(HOST_DIR)/usr/bin/ldd
+! 	ln -sf ldd $(HOST_DIR)/usr/bin/$(GNU_TARGET_NAME)-ldd
+! 	$(INSTALL) -D -m 0755 $(@D)/utils/ldconfig.host $(HOST_DIR)/usr/bin/ldconfig
+! 	ln -sf ldconfig $(HOST_DIR)/usr/bin/$(GNU_TARGET_NAME)-ldconfig
+  endef
+  endif
+  
+--- 516,528 ----
+  # STATIC has no ld* tools, only getconf
+  ifeq ($(BR2_PREFER_STATIC_LIB),)
+  define UCLIBC_INSTALL_UTILS_STAGING
+! 	#Till Straumann: do NOT install as 'ldd/ldconfig' since this may
+! 	#result in this ldd being used when the native/host ldd is wanted.
+! 	#Fixes a problem when configuring ncurses; uclibc's ldd produces
+! 	#output which is incompatible with ncurses-5.7 'configure'
+! 
+! 	$(INSTALL) -D -m 0755 $(@D)/utils/ldd.host $(HOST_DIR)/usr/bin/$(GNU_TARGET_NAME)-ldd
+! 	$(INSTALL) -D -m 0755 $(@D)/utils/ldconfig.host $(HOST_DIR)/usr/bin/$(GNU_TARGET_NAME)-ldconfig
+  endef
+  endif
+  

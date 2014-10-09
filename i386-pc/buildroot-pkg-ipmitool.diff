@@ -17843,15 +17843,15 @@ diff -crN package/ipmitool.orig/ipmitool.mk package/ipmitool/ipmitool.mk
 + endef
 + 
 + $(eval $(autotools-package))
-*** package/Config.in.orig	2014-02-27 12:51:23.000000000 -0800
---- package/Config.in	2014-03-12 10:19:58.820237101 -0700
+*** package/Config.in.orig	2014-09-15 09:57:49.000000000 -0700
+--- package/Config.in	2014-09-15 09:58:16.000000000 -0700
 ***************
-*** 299,304 ****
---- 299,305 ----
-  source "package/input-tools/Config.in"
-  source "package/intel-microcode/Config.in"
-  source "package/iostat/Config.in"
-+ source "package/ipmitool/Config.in"
-  source "package/irda-utils/Config.in"
-  source "package/iucode-tool/Config.in"
-  source "package/kbd/Config.in"
+*** 321,326 ****
+--- 321,327 ----
+  	source "package/input-tools/Config.in"
+  	source "package/intel-microcode/Config.in"
+  	source "package/iostat/Config.in"
++ 	source "package/ipmitool/Config.in"
+  	source "package/irda-utils/Config.in"
+  	source "package/iucode-tool/Config.in"
+  	source "package/kbd/Config.in"
