@@ -1,4 +1,4 @@
-T.S.  2014/03/31
+T.S.  2014/10/13
 
 Directory Structure
 -------------------
@@ -24,19 +24,20 @@ to keep them there so that if you rebuild everything you don't have
 to download everything again. Also, if you have different configurations
 of buildroot then they can all share the same downloads.
 
+Nowadays I even go a bit further and share the 'download' directory
+among different buildroot versions in this case I make 'download'
+a symlink to some outside location.
+
 2. BUILDROOT Subdirectory
 - - - - - - - - - - - - -
 
-   buildroot[-<config>]/
+   buildroot-<version>-[-<config>]/
 
 This is the top directory of 'buildroot' itself. Everything that
 buildroot builds ends up somewhere underneath this directory.
 
 If you unpack the buildroot distribution in the <TOP> directory
 then the unpack procedure creates a 'buildroot-<version>' directory.
-You can leave it like that but since I already name my TOP after
-the version I usually rename the buildroot top to just 'buildroot'
-or 'buildroot-x86'.
 
 It should be noted that buildroot does not currently support
 building different configurations (e.g., different targets
@@ -47,8 +48,8 @@ the configuration. E.g., if I have stable and development
 versions for x86 (assume version 2014.02) then I could have
 
   buildroot-2014.02/download/
-  buildroot-2014.02/buildroot-x86-devl/
-  buildroot-2014.02/buildroot-x86/
+  buildroot-2014.02/buildroot-2014.02-x86-devl/
+  buildroot-2014.02/buildroot-2014.02-x86/
 
 If you only build for the same target architecture then you
 could also omit the 'x86'. Nothing about these names is special
@@ -76,8 +77,8 @@ Each build/configuration is connected to a 'site-top' by
 means of a symlink. E.g., for the aforementioned stable
 and development builds there could be
 
-  buildroot/site       -> ../site-top/i386-pc/
-  buildroot-devl/site  -> ../site-top-devl/i386-pc/
+  buildroot-2012.02/site       -> ../site-top/i386-pc/
+  buildroot-2012.02-devl/site  -> ../site-top-devl/i386-pc/
 
 As you see, the 'site' symlink points to a target-architecture
 specific subdirectory of 'site-top'. Even though we currently
@@ -94,7 +95,10 @@ a toolchain. (A config which wishes to share this toolchain
 must in-turn be configured accordingly.)
 
 External software can just use the toolchain in
-<TOP>/buildroot-<version/host/usr/bin/
+<TOP>/buildroot-<version/host/<host-arch>/usr/bin/
+
+This structure supports multiple host architectures (since we
+still use 32-bit build machines in some places at slac).
 
 INSTALLATION
 ============
