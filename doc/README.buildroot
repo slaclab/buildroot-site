@@ -1,0 +1,22 @@
+Modifying kernel, uclibc or busybox configuration:
+
+  - in buildroot set config file locations for linux/uclibc/busybox to
+    respective files in 'site'.
+  - build
+  - reconfigure with make make linux-menuconfig / uclibc-menuconfig / make busybox-menuconfig
+
+
+    Note that these reconfigurations are *not* propagated back to the
+    versions under 'site':
+    ==> copy output/build/busybox-xxx/.config -> site/bb-<version>.config
+    (same for uClibc)
+
+    ==> the kernel and buildroot itself support 'defconfigs' (files that
+    list only options that deviate from the default values). In order
+    to bring changes back to 'site':
+      make linux-savedefconfig
+      mv   output/build/linux-<version>/defconfig site/linux-<version>.config
+
+	for buildroot itself:
+      make savedefconfig
+      mv   defconfig site/br-<version>.config

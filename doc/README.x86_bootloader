@@ -1,5 +1,17 @@
-net-bootloader evaluation for x86
----------------------------------
+net-bootloader for x86
+----------------------
+
+We currently use iPXE in a two-phase approach:
+1) use PXE to load iPXE (with UNDI network driver)
+   as a second-stage bootloader.
+2) iPXE loads a script file which directs it what
+   to boot ultimately.
+
+For services we need DHCP, TFTP and for linux also
+NFS and NTP.
+
+
+OLD INFO REGARDING GPXE:
 
 a) GPXE (on local disk or via PXE)
  - NFS support but only on a 'non-official' branch
