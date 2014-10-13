@@ -1,0 +1,255 @@
+Old RHEL5 does not provide/implement the O_CLOEXEC flag.
+This patch sets the flag via fcntl() if not available.
+
+Also, a work-around for be32toh is provided.
+
+*** ./libkmod/libkmod.c.orig	2014-10-10 08:34:11.000000002 -0700
+--- ./libkmod/libkmod.c	2014-10-10 08:47:09.000000002 -0700
+***************
+*** 917,919 ****
+--- 917,969 ----
+  {
+  	return ctx->config;
+  }
++ 
++ #ifndef O_CLOEXEC
++ static int set_cloexec(int fd)
++ {
++ int flgs;
++ 	flgs = fcntl(fd, F_GETFD);
++ 	if ( -1 == flgs ) {
++ 		return -1;
++ 	}
++ 	flgs |= FD_CLOEXEC;
++ 	if ( fcntl(fd, F_SETFD, flgs) ) {
++ 		return -1;
++ 	}
++ 	return 0;
++ }
++ #endif
++ 
++ int open_cloexec(const char *filename, int flags)
++ {
++ #ifdef O_CLOEXEC
++ 	return open(filename, flags|O_CLOEXEC);
++ #else
++ int fd;
++ 	if ((fd = open(filename, flags)) < 0) {
++ 		return -1;
++ 	}
++ 	if ( set_cloexec(fd) ) {
++ 		close(fd);
++ 		return -1;
++ 	}
++ 	return fd;
++ #endif
++ }
++ 
++ int openat_cloexec(int dirfd, const char *filename, int flags)
++ {
++ #ifdef O_CLOEXEC
++ 	return openat(dirfd, filename, flags|O_CLOEXEC);
++ #else
++ int fd;
++ 	if ((fd = openat(dirfd, filename, flags)) < 0) {
++ 		return -1;
++ 	}
++ 	if ( set_cloexec(fd) ) {
++ 		close(fd);
++ 		return -1;
++ 	}
++ 	return fd;
++ #endif
++ }
+*** ./libkmod/libkmod-index.c.orig	2014-10-10 08:20:24.000000002 -0700
+--- ./libkmod/libkmod-index.c	2014-10-10 08:37:15.000000002 -0700
+***************
+*** 795,801 ****
+  		return NULL;
+  	}
+  
+! 	if ((fd = open(filename, O_RDONLY|O_CLOEXEC)) < 0) {
+  		DBG(ctx, "open(%s, O_RDONLY|O_CLOEXEC): %m\n", filename);
+  		goto fail_open;
+  	}
+--- 795,801 ----
+  		return NULL;
+  	}
+  
+! 	if ((fd = open_cloexec(filename, O_RDONLY)) < 0) {
+  		DBG(ctx, "open(%s, O_RDONLY|O_CLOEXEC): %m\n", filename);
+  		goto fail_open;
+  	}
+*** ./libkmod/libkmod-config.c.orig	2014-10-10 08:20:38.000000002 -0700
+--- ./libkmod/libkmod-config.c	2014-10-10 08:37:42.000000002 -0700
+***************
+*** 525,531 ****
+  	int fd, err;
+  	char *p, *modname,  *param = NULL, *value = NULL, is_module = 1;
+  
+! 	fd = open("/proc/cmdline", O_RDONLY|O_CLOEXEC);
+  	if (fd < 0) {
+  		err = -errno;
+  		DBG(config->ctx, "could not open '/proc/cmdline' for reading: %m\n");
+--- 525,531 ----
+  	int fd, err;
+  	char *p, *modname,  *param = NULL, *value = NULL, is_module = 1;
+  
+! 	fd = open_cloexec("/proc/cmdline", O_RDONLY);
+  	if (fd < 0) {
+  		err = -errno;
+  		DBG(config->ctx, "could not open '/proc/cmdline' for reading: %m\n");
+***************
+*** 892,898 ****
+  			snprintf(fn, sizeof(fn),"%s/%s", cf->path,
+  					cf->name);
+  
+! 		fd = open(fn, O_RDONLY|O_CLOEXEC);
+  		DBG(ctx, "parsing file '%s' fd=%d\n", fn, fd);
+  
+  		if (fd >= 0)
+--- 892,898 ----
+  			snprintf(fn, sizeof(fn),"%s/%s", cf->path,
+  					cf->name);
+  
+! 		fd = open_cloexec(fn, O_RDONLY);
+  		DBG(ctx, "parsing file '%s' fd=%d\n", fn, fd);
+  
+  		if (fd >= 0)
+*** ./libkmod/libkmod-module.c.orig	2014-10-10 08:20:48.000000002 -0700
+--- ./libkmod/libkmod-module.c	2014-10-10 08:47:41.000000002 -0700
+***************
+*** 1718,1724 ****
+  
+  	pathlen = snprintf(path, sizeof(path),
+  				"/sys/module/%s/initstate", mod->name);
+! 	fd = open(path, O_RDONLY|O_CLOEXEC);
+  	if (fd < 0) {
+  		err = -errno;
+  
+--- 1718,1724 ----
+  
+  	pathlen = snprintf(path, sizeof(path),
+  				"/sys/module/%s/initstate", mod->name);
+! 	fd = open_cloexec(path, O_RDONLY);
+  	if (fd < 0) {
+  		err = -errno;
+  
+***************
+*** 1788,1794 ****
+  		return -errno;
+  
+  	/* available as of linux 3.3.x */
+! 	cfd = openat(dfd, "coresize", O_RDONLY|O_CLOEXEC);
+  	if (cfd >= 0) {
+  		if (read_str_long(cfd, &size, 10) < 0)
+  			ERR(mod->ctx, "failed to read coresize from %s\n", line);
+--- 1788,1794 ----
+  		return -errno;
+  
+  	/* available as of linux 3.3.x */
+! 	cfd = openat_cloexec(dfd, "coresize", O_RDONLY);
+  	if (cfd >= 0) {
+  		if (read_str_long(cfd, &size, 10) < 0)
+  			ERR(mod->ctx, "failed to read coresize from %s\n", line);
+***************
+*** 1857,1863 ****
+  		return -ENOENT;
+  
+  	snprintf(path, sizeof(path), "/sys/module/%s/refcnt", mod->name);
+! 	fd = open(path, O_RDONLY|O_CLOEXEC);
+  	if (fd < 0) {
+  		err = -errno;
+  		DBG(mod->ctx, "could not open '%s': %s\n",
+--- 1857,1863 ----
+  		return -ENOENT;
+  
+  	snprintf(path, sizeof(path), "/sys/module/%s/refcnt", mod->name);
+! 	fd = open_cloexec(path, O_RDONLY);
+  	if (fd < 0) {
+  		err = -errno;
+  		DBG(mod->ctx, "could not open '%s': %s\n",
+***************
+*** 2000,2006 ****
+  				continue;
+  		}
+  
+! 		fd = openat(dfd, dent->d_name, O_RDONLY|O_CLOEXEC);
+  		if (fd < 0) {
+  			ERR(mod->ctx, "could not open '%s/%s': %m\n",
+  							dname, dent->d_name);
+--- 2000,2006 ----
+  				continue;
+  		}
+  
+! 		fd = openat_cloexec(dfd, dent->d_name, O_RDONLY);
+  		if (fd < 0) {
+  			ERR(mod->ctx, "could not open '%s/%s': %m\n",
+  							dname, dent->d_name);
+*** ./libkmod/libkmod-file.c.orig	2014-10-10 08:20:55.000000002 -0700
+--- ./libkmod/libkmod-file.c	2014-10-10 08:38:29.000000002 -0700
+***************
+*** 292,298 ****
+  	if (file == NULL)
+  		return NULL;
+  
+! 	file->fd = open(filename, O_RDONLY|O_CLOEXEC);
+  	if (file->fd < 0) {
+  		err = -errno;
+  		goto error;
+--- 292,298 ----
+  	if (file == NULL)
+  		return NULL;
+  
+! 	file->fd = open_cloexec(filename, O_RDONLY);
+  	if (file->fd < 0) {
+  		err = -errno;
+  		goto error;
+*** ./libkmod/libkmod-internal.h.orig	2014-10-10 08:30:22.000000002 -0700
+--- ./libkmod/libkmod-internal.h	2014-10-10 08:43:17.000000002 -0700
+***************
+*** 103,108 ****
+--- 103,111 ----
+  
+  const struct kmod_config *kmod_get_config(const struct kmod_ctx *ctx) __attribute__((nonnull(1)));
+  
++ int open_cloexec(const char *pathname, int flags);
++ int openat_cloexec(int dirfd, const char *pathname, int flags);
++ 
+  /* libkmod-config.c */
+  struct kmod_config_path {
+  	unsigned long long stamp;
+*** ./libkmod/libkmod-signature.c.orig	2014-10-10 08:52:30.000000002 -0700
+--- ./libkmod/libkmod-signature.c	2014-10-10 08:55:00.000000002 -0700
+***************
+*** 19,24 ****
+--- 19,27 ----
+   */
+  
+  #include <endian.h>
++ #ifndef be32toh
++ #include <byteswap.h>
++ #endif
+  #include <stdint.h>
+  #include <stdlib.h>
+  #include <string.h>
+***************
+*** 121,127 ****
+--- 124,140 ----
+  			modsig->hash >= PKEY_HASH__LAST ||
+  			modsig->id_type >= PKEY_ID_TYPE__LAST)
+  		return false;
++ #ifndef be32toh
++ 	sig_len = get_unaligned(&modsig->sig_len);
++ #if !defined(__BYTE_ORDER) || !defined(__LITTLE_ENDIAN)
++ #error "__BYTE_ORDER or __LITTLE_ENDIAN undefined -- missing header?"
++ #endif
++ #if __BYTE_ORDER == __LITTLE_ENDIAN
++ 	sig_len = bswap_32(sig_len);
++ #endif
++ #else
+  	sig_len = be32toh(get_unaligned(&modsig->sig_len));
++ #endif
+  	if (size < (off_t)(modsig->signer_len + modsig->key_id_len + sig_len))
+  		return false;
+  
