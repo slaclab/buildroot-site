@@ -163,9 +163,13 @@ Then
 
       cat site/buildroot-*.diff | patch -p0 -b
 
- - copy buildroot config file
+ - copy buildroot defconfig file
 
       cp site/br-<version>.config .config
+
+ - convert defconfig into config
+
+      make olddefconfig
 
 4. Build
 --------
