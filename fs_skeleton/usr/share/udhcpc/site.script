@@ -22,7 +22,7 @@ case "$1" in
 
 		if [ -n "$router" ] ; then
 			echo "deleting routers"
-			while route del default gw 0.0.0.0 dev $interface ; do
+			while route del default gw 0.0.0.0 dev $interface > /dev/null 2>&1 ; do
 				:
 			done
 
@@ -45,7 +45,7 @@ case "$1" in
 		fi
 
 		if [ -n "$ntpsrv" ] ; then
- 			if [ -r $NTPD_CONF -a "$ntpsrv" != "`( . $NTPD_CONF; echo -n $NTPSERVERS)`" ] ; then
+ 			if [ -r $NTPD_CONF ] && [ "$ntpsrv" != "`( . $NTPD_CONF; echo -n $NTPSERVERS)`" ] ; then
 				echo "setting NTP servers in $NTPD_CONF: $ntpsrv"
 				sed -i -e 's/NTPSERVERS.*/NTPSERVERS="'"$ntpsrv"'"/g' $NTPD_CONF
 			fi
