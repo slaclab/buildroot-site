@@ -68,8 +68,8 @@
   extern void __iomem *zynq_slcr_base;
   extern void __iomem *zynq_scu_base;
   
-*** drivers/uio/uio_pdrv_genirq.c.orig	2014-11-13 21:04:25.818246031 -0800
---- drivers/uio/uio_pdrv_genirq.c	2014-11-13 21:27:14.257049087 -0800
+*** linux-3.14.12/drivers/uio/uio_pdrv_genirq.c.orig	2014-11-13 21:04:25.818246031 -0800
+--- linux-3.14.12/drivers/uio/uio_pdrv_genirq.c	2014-11-13 21:27:14.257049087 -0800
 ***************
 *** 148,154 ****
   	if (!uioinfo->irq) {
