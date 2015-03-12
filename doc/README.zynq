@@ -1,0 +1,13 @@
+T.S. 2015/3/10:
+ - enabled deadlock detection, atomic sleep violations etc.
+
+   zynq-cpuidle + nohz -> some violations (fixed in 3.18)
+
+   xilinx-xadc -> violations (not fixed in 3.18)
+
+   NOTE: CONFIG_PROVE_LOCKING **kills** RT performance (latency)
+
+   => disable iio + xilinx-xadc support
+
+2015/3/11:
+ - enable fabric clocks in device tree: &clkc { fclk-enable = <0xf>; }
