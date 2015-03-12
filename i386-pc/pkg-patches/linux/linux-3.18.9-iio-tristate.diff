@@ -1,5 +1,5 @@
-*** linux-3.14.12/drivers/iio/Kconfig.orig	2014-11-28 09:39:13.449712778 -0800
---- linux-3.14.12/drivers/iio/Kconfig	2014-11-28 09:39:44.156788881 -0800
+*** linux-3.18.9/drivers/iio/Kconfig.orig	2014-11-28 09:39:13.449712778 -0800
+--- linux-3.18.9/drivers/iio/Kconfig	2014-11-28 09:39:44.156788881 -0800
 ***************
 *** 34,40 ****
   	  often to read from the buffer.
