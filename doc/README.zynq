@@ -5,7 +5,20 @@ T.S. 2015/3/10:
 
    xilinx-xadc -> violations (not fixed in 3.18)
 
-   NOTE: CONFIG_PROVE_LOCKING **kills** RT performance (latency)
+   NOTE: CONFIG_PROVE_LOCKING **kills** RT performance (max latency -> several ms)
+         CONFIG_DEBUG_LOCK_ALLOC -> max latency ~80us
+
+	     both removed: -> max lat ~50us, avg ~26us
+
+		 unset: # CONFIG_FUNCTION_GRAPH_TRACER is not set
+         -> max lat ~40us, avg ~23us
+
+
+         removing CONFIG_CGROUPS, CONFIG_NAMESPACES, CONFIG_PM_RUNTIME,
+		          CONFIG_PM_DEBUG and CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP
+
+         shaved off another 2us...
+
 
    => disable iio + xilinx-xadc support
 
