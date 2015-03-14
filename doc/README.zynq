@@ -24,3 +24,9 @@ T.S. 2015/3/10:
 
 2015/3/11:
  - enable fabric clocks in device tree: &clkc { fclk-enable = <0xf>; }
+
+2015/3/12 (actually older):
+  linux kill non-root processes (SIGKILL) w/o clues. this was traced
+  down to CONFIG_DEFAULT_MMAP_MIN_ADDR which was 65k. We just want to
+  protect the first page (null ptr?) and chose 4096.
+
