@@ -11,7 +11,7 @@
   	--disable-testio-debug \
   	--disable-rpath
   
-+ HOST_E2FSPROGS_CONF_OPT = \
++ HOST_E2FSPROGS_CONF_OPTS = \
 +  	--enable-symlink-build \
 +  	--enable-symlink-install
 +  
