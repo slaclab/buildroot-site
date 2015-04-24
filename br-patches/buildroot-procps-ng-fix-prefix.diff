@@ -9,9 +9,9 @@ T.S. 11/2014.
 ***************
 *** 17,20 ****
 --- 17,22 ----
-  PROCPS_NG_CONF_OPT += LIBS=-lintl
+  PROCPS_NG_CONF_OPTS += LIBS=-lintl
   endif
   
-+ PROCPS_NG_CONF_OPT += --prefix=/ --exec-prefix=/
++ PROCPS_NG_CONF_OPTS += --prefix=/ --exec-prefix=/
 + 
   $(eval $(autotools-package))
