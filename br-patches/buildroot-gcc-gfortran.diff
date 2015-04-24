@@ -1,0 +1,119 @@
+*** package/gcc/Config.in.host.orig	2015-04-23 12:51:35.508064233 -0700
+--- package/gcc/Config.in.host	2015-04-23 12:52:36.626182746 -0700
+***************
+*** 128,133 ****
+--- 128,142 ----
+  	  Enable the compiler to generate code for accessing
+  	  thread local storage variables
+  
++ config BR2_INSTALL_FORTRAN
++     bool "Enable Fortran support"
++     depends on !BR2_avr32
++     select BR2_PACKAGE_MPFR
++     help
++       Enable the support for the Fortran language in the
++       cross-compiler, and install the Fortran runtime to the
++ 
++ 
+  config BR2_GCC_ENABLE_OPENMP
+  	bool "Enable compiler OpenMP support"
+  	depends on !BR2_PTHREADS_NONE && !BR2_avr32 && !BR2_arc && !BR2_microblaze
+*** package/gcc/gcc.mk.orig	2015-04-23 12:53:56.807700266 -0700
+--- package/gcc/gcc.mk	2015-04-23 12:54:37.830424325 -0700
+***************
+*** 116,122 ****
+  endif
+  
+  # gcc 4.6.x quadmath requires wchar
+! ifneq ($(BR2_TOOLCHAIN_BUILDROOT_WCHAR),y)
+  HOST_GCC_COMMON_CONF_OPTS += --disable-libquadmath
+  endif
+  
+--- 116,122 ----
+  endif
+  
+  # gcc 4.6.x quadmath requires wchar
+! ifneq ($(BR2_USE_WCHAR),y)
+  HOST_GCC_COMMON_CONF_OPTS += --disable-libquadmath
+  endif
+  
+*** package/mpfr/Config.in.orig	2015-04-23 13:02:13.680023994 -0700
+--- package/mpfr/Config.in	2015-04-23 13:02:39.335213550 -0700
+***************
+*** 1,5 ****
+--- 1,6 ----
+  config BR2_PACKAGE_MPFR
+  	bool "mpfr"
++ 	default y if BR2_INSTALL_FORTRAN
+  	select BR2_PACKAGE_GMP
+  	help
+  	  C library for multiple-precision floating-point computations
+*** package/gcc/gcc-final/gcc-final.mk.orig	2015-04-23 12:59:08.865906550 -0700
+--- package/gcc/gcc-final/gcc-final.mk	2015-04-23 14:54:10.273987668 -0700
+***************
+*** 44,49 ****
+--- 44,50 ----
+  # Languages supported by the cross-compiler
+  GCC_FINAL_CROSS_LANGUAGES-y = c
+  GCC_FINAL_CROSS_LANGUAGES-$(BR2_INSTALL_LIBSTDCPP) += c++
++ GCC_FINAL_CROSS_LANGUAGES-$(BR2_INSTALL_FORTRAN)   += fortran
+  GCC_FINAL_CROSS_LANGUAGES = $(subst $(space),$(comma),$(GCC_FINAL_CROSS_LANGUAGES-y))
+  
+  HOST_GCC_FINAL_CONF_OPTS = \
+***************
+*** 130,135 ****
+--- 131,141 ----
+  HOST_GCC_FINAL_USR_LIBS += libgomp
+  endif
+  
++ ifeq ($(BR2_INSTALL_FORTRAN),y)
++ HOST_GCC_FINAL_USR_LIBS += libgfortran
++ HOST_GCC_FINAL_USR_LIBS += libquadmath
++ endif
++ 
+  ifeq ($(BR2_GCC_ENABLE_LIBMUDFLAP),y)
+  ifeq ($(BR2_TOOLCHAIN_HAS_THREADS),y)
+  HOST_GCC_FINAL_USR_LIBS += libmudflapth
+***************
+*** 141,158 ****
+  ifneq ($(HOST_GCC_FINAL_USR_LIBS),)
+  define HOST_GCC_FINAL_INSTALL_STATIC_LIBS
+  	for i in $(HOST_GCC_FINAL_USR_LIBS) ; do \
+! 		cp -dpf $(HOST_DIR)/usr/$(GNU_TARGET_NAME)/lib*/$${i}.a \
+! 			$(STAGING_DIR)/usr/lib/ ; \
+  	done
+  endef
+  
+  ifeq ($(BR2_STATIC_LIBS),)
+  define HOST_GCC_FINAL_INSTALL_SHARED_LIBS
+  	for i in $(HOST_GCC_FINAL_USR_LIBS) ; do \
+! 		cp -dpf $(HOST_DIR)/usr/$(GNU_TARGET_NAME)/lib*/$${i}.so* \
+! 			$(STAGING_DIR)/usr/lib/ ; \
+! 		cp -dpf $(HOST_DIR)/usr/$(GNU_TARGET_NAME)/lib*/$${i}.so* \
+! 			$(TARGET_DIR)/usr/lib/ ; \
+  	done
+  endef
+  endif
+--- 147,168 ----
+  ifneq ($(HOST_GCC_FINAL_USR_LIBS),)
+  define HOST_GCC_FINAL_INSTALL_STATIC_LIBS
+  	for i in $(HOST_GCC_FINAL_USR_LIBS) ; do \
+! 		if [ -e $(HOST_DIR)/usr/$(GNU_TARGET_NAME)/lib*/$${i}.so* ] ; then \
+! 			cp -dpf $(HOST_DIR)/usr/$(GNU_TARGET_NAME)/lib*/$${i}.a \
+! 				$(STAGING_DIR)/usr/lib/ ; \
+! 		fi \
+  	done
+  endef
+  
+  ifeq ($(BR2_STATIC_LIBS),)
+  define HOST_GCC_FINAL_INSTALL_SHARED_LIBS
+  	for i in $(HOST_GCC_FINAL_USR_LIBS) ; do \
+! 		if [ -e $(HOST_DIR)/usr/$(GNU_TARGET_NAME)/lib*/$${i}.so* ] ; then \
+! 			cp -dpf $(HOST_DIR)/usr/$(GNU_TARGET_NAME)/lib*/$${i}.so* \
+! 				$(STAGING_DIR)/usr/lib/ ; \
+! 			cp -dpf $(HOST_DIR)/usr/$(GNU_TARGET_NAME)/lib*/$${i}.so* \
+! 				$(TARGET_DIR)/usr/lib/ ; \
+! 		fi \
+  	done
+  endef
+  endif
