@@ -3,32 +3,6 @@
    for rtprio, memlock, coredump -- however, the corresponding soft
    limits are still low/zero.
 T.S, 2012/3/30
-*** busybox-1.22.1/shell/shell_common.c.orig	2014-01-09 10:15:44.000000002 -0800
---- busybox-1.22.1/shell/shell_common.c	2014-08-27 08:29:05.000000002 -0700
-***************
-*** 320,325 ****
---- 320,328 ----
-  #ifdef RLIMIT_RTPRIO
-  	{ RLIMIT_RTPRIO,	0,	'r',	"real-time priority" },
-  #endif
-+ #ifdef RLIMIT_RTPRIO
-+ 	{ RLIMIT_RTPRIO,	0,	'r',	"real-time priority" },
-+ #endif
-  };
-  
-  enum {
-***************
-*** 368,373 ****
---- 371,379 ----
-  #ifdef RLIMIT_RTPRIO
-  			"r::"
-  #endif
-+ #ifdef RLIMIT_RTPRIO
-+ 			"r::"
-+ #endif
-  			;
-  
-  static void printlim(unsigned opts, const struct rlimit *limit,
 *** busybox-1.22.1/init/init.c.orig	2014-01-09 10:15:44.000000002 -0800
 --- busybox-1.22.1/init/init.c	2014-08-27 08:29:05.000000002 -0700
 ***************
