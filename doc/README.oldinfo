@@ -1,4 +1,4 @@
-T.S. 2012/3...
+T.S. 2012/3... (OLD / POSSIBLY OUTDATED INFO)
  - we keep buildroot, busybox, uclibc, linux configuration files
    in 'site'. If either 'live' configuration is changed (via 'make xxx-menuconfig')
    then the 'live' .config file must be copied from the output/build/xxx area

@@ -149,28 +149,49 @@ Create symlink to site-specific config files, patches etc.
 
    ln -s ../site-top buildroot-2015.02/site # if you renamed the unpacked buildroot top then use the name here, of course
 
-3. Apply Patches
-----------------
+3. Run SLAC prep helper script
+------------------------------
+
+Since 2015.02 a bash script was added which performs several
+steps that had to be done manually:
+
+  - apply buildroot patches (from site/br-patches/)
+    A '.stamp_br_patched' flag-file is created after this step
+    so that the script doesn't attempt to apply patches twice.
+  - Compile the buildroot config file from snippets (arch-specific
+    and common/generic pieces) under site/config/.
+  - Convert the buildroot config file (which really is a 'defconfig',
+    i.e., a list of settings that deviate from the defaults) to a
+    full-blown config file (.config).
+  - Compile the linux kernel defconfig file from arch-specific and
+    common/generic pieces under site/config/ to 'linux-<version>.config'.
+    This is a 'defconfig'.
 
 First, change the working-directory into the buildroot source directory.
 
   cd buildroot-2015.02/   # or whatever you renamed the directory to
 
-Then
+Then execute
 
- - apply buildroot patches from site/ they are
-   all named buildroot-xxx.diff
+  site/scripts/br-installconf.sh -a <arch>
 
-      cat site/br-patches/buildroot-*.diff | patch -p0 -b
+were <arch> is one of:
+  zynq
+  i386
+  x86_64
 
-TODO---
- - copy buildroot defconfig file
+Upon successful completion the script will install a '.stamp_br_installconf'
+flag-file which will prevent the script from executing again (can be
+overridden with a '-f' option).
 
-      cp site/br-<version>.config .config
-
- - convert defconfig into config
-
-      make olddefconfig
+Script options:
+  -h: help
+  -f: force    -- recompile config files 
+  -p: no-patch -- do not apply buildroot patches (handy if you want to
+                  'force' a reinstall of config files (e.g., for
+                  different arch) but patches had been applied already.
+  -d: dry-run  -- show what script would do (some steps are retraced,
+                  i.e., files are restored).
 
 4. Build
 --------
@@ -189,3 +210,8 @@ NOTE: if your main build machine has no access to the internet then
          4. log out, back into your build machine
          5. type 'make'
 
+5. Modifying the Configuration Files
+------------------------------------
+
+This process is explained in a separate README.buildroot.modify_config
+file.
