@@ -39,6 +39,16 @@ Modifying kernel, busybox, or buildroot configuration:
         diff -c .config.orig defconfig
 
     you obtain the differences that the reconfiguration has created.
+
+      NOTE: because the process of converting the original .config
+            into a full config and then saving a 'defconfig' may
+            change the order of entries in the file it may be better
+            to sort '.config.orig' and 'defconfig' before running 'diff':
+
+               sort .config.orig > a
+               sort defconfig    > b
+               diff -c a b
+
     These diffs must then be manually copied into the 
         site/config/br-<version>-<arch>.config
     and
@@ -56,8 +66,12 @@ Modifying kernel, busybox, or buildroot configuration:
     saved a copy of the original kernel defconfig as 'linux-<version>.config.orig'
     and a diff of the two files reveals any configuration changes that
     then must be carried into arch-specific or common pieces
+
        site/config/linux-<version>-<arch>.config
        site/config/linux-<version>-common.config
+
+    The above note about running 'diff' on sorted versions of the
+    respective files also applies to the kernel defconfig.
 
 
 	busybox:
