@@ -1,5 +1,5 @@
 #!/bin/sh
-TEMP=`getopt -o a:hpfd -n "$0" -- "$@"`
+TEMP=`getopt -o a:hpfdO -n "$0" -- "$@"`
 
 if [ $? != 0 ] ; then
 	echo "getopt error - terminating..." >&2;
@@ -16,6 +16,7 @@ while true; do
 			echo "          -p omit patching buildroot (if already done)"
 			echo "          -f force rerun (if already done)"
 			echo "          -d dry-run"
+			echo "          -O out-of-tree build (not too useful, though)"
 			exit 0
 		;;
 		-p )
@@ -46,6 +47,10 @@ while true; do
 			esac
 			shift 2
 		;;
+		-O )
+			OOF_TREE=y
+			shift
+		;;
 		--) shift; break
 		;;
 		*) echo "Invalid option $1" >&2; exit 1
@@ -59,12 +64,27 @@ if [ -z "$ARCH" ] ; then
 	exit 1;
 fi
 
-if [ -f .stamp_br_installconf ] ; then
+##NOTE the buildroot out-of-tree feature is not
+##     really useful since it still duplicates
+##     source extraction in each output directory
+if [ "y" = "${OOF_TREE}" ] ; then
+	CONF_DIR=output-${ARCH}
+	MKOUTDIR="O=${CONF_DIR}"
+	SP=" "
+	if [ ! -d ${CONF_DIR} ] ; then
+		mkdir ${CONF_DIR}
+	fi
+else
+	SP=""
+	CONF_DIR=.
+fi
+
+if [ -f ${CONF_DIR}/.stamp_br_installconf ] ; then
 	if [ -z "$FORCE" ] ; then
 		echo "Error: $0 was already executed (use -f to force, -fp to avoid repatching)!" >&2
 		exit 1;
 	fi
-	rm .stamp_br_installconf
+	rm ${CONF_DIR}/.stamp_br_installconf
 	if [ -z "$NOPATCH" ] ; then
 		rm .stamp_br_patched
 	fi
@@ -89,34 +109,35 @@ if [ $? != 0 ]; then
 fi
 
 restore() {
-	rm .config .config.orig
-	if [ -f .config.bup ] ; then
-		mv .config.bup .config
+	rm ${CONF_DIR}/.config ${CONF_DIR}/.config.orig
+	if [ -f ${CONF_DIR}/.config.bup ] ; then
+		mv ${CONF_DIR}/.config.bup ${CONF_DIR}/.config
 	fi
-	if [ -f .config.old.bup ] ; then
-		mv .config.old.bup .config.old
+	if [ -f ${CONF_DIR}/.config.old.bup ] ; then
+		mv ${CONF_DIR}/.config.old.bup ${CONF_DIR}/.config.old
 	fi
-	if [ -f linux-${LINUX_VER}.config.bup ] ; then
-		mv linux-${LINUX_VER}.config.bup linux-${LINUX_VER}.config
+	if [ -f ${CONF_DIR}/linux-${LINUX_VER}.config.bup ] ; then
+		mv ${CONF_DIR}/linux-${LINUX_VER}.config.bup ${CONF_DIR}/linux-${LINUX_VER}.config
 	fi
 }
 
-if [ -f .config ] ; then
-	mv .config .config.bup
+if [ -f ${CONF_DIR}/.config ] ; then
+	mv ${CONF_DIR}/.config ${CONF_DIR}/.config.bup
 fi
-cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-generic.config > .config
+cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-generic.config > ${CONF_DIR}/.config
 if [ $? != 0 ] ; then
 	echo "Error: unable to install .config file" >&2
+	restore
 	exit 1
 fi
-cp .config .config.orig
-if [ -f .config.old ] ; then
-	cp .config.old .config.old.bup
+cp ${CONF_DIR}/.config ${CONF_DIR}/.config.orig
+if [ -f ${CONF_DIR}/.config.old ] ; then
+	cp ${CONF_DIR}/.config.old ${CONF_DIR}/.config.old.bup
 fi
 
-make olddefconfig
+make ${MKOUTDIR} olddefconfig
 
-LINUX_VER=`make -f - print-linux-version <<"EOF"
+LINUX_VER=`make ${MKOUTDIR} -f - print-linux-version <<"EOF"
 include Makefile
 print-linux-version:
 	@echo $(LINUX_VERSION)
@@ -146,18 +167,18 @@ if [ -n "${DRY_RUN}" ] ; then
 fi
 
 
-if [ -f linux-${LINUX_VER}.config ] ; then
-	mv linux-${LINUX_VER}.config linux-${LINUX_VER}.config.bup
+if [ -f ${CONF_DIR}/linux-${LINUX_VER}.config ] ; then
+	mv ${CONF_DIR}/linux-${LINUX_VER}.config ${CONF_DIR}/linux-${LINUX_VER}.config.bup
 fi
 if [ -f site/config/linux-${LINUX_VER}-common.config -a -f site/config/linux-${LINUX_VER}-${KARCH}.config ] ; then
-	cat site/config/linux-${LINUX_VER}-common.config site/config/linux-${LINUX_VER}-${KARCH}.config  > linux-${LINUX_VER}.config
-	cp linux-${LINUX_VER}.config linux-${LINUX_VER}.config.orig
+	cat site/config/linux-${LINUX_VER}-common.config site/config/linux-${LINUX_VER}-${KARCH}.config  > ${CONF_DIR}/linux-${LINUX_VER}.config
+	cp ${CONF_DIR}/linux-${LINUX_VER}.config ${CONF_DIR}/linux-${LINUX_VER}.config.orig
 else
 	echo "Error: linux config snippets for linux-${LINUX_VER} not found" >&2
 	restore;
 	exit 1
 fi
 
-touch .stamp_br_installconf
+touch ${CONF_DIR}/.stamp_br_installconf
 
-echo "Now type 'make' to build"
+echo "Now type 'make${SP}${MKOUTDIR}' to build"
