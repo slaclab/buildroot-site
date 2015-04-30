@@ -124,7 +124,7 @@ restore() {
 if [ -f ${CONF_DIR}/.config ] ; then
 	mv ${CONF_DIR}/.config ${CONF_DIR}/.config.bup
 fi
-cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-generic.config > ${CONF_DIR}/.config
+cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-common.config > ${CONF_DIR}/.config
 if [ $? != 0 ] ; then
 	echo "Error: unable to install .config file" >&2
 	restore

@@ -28,7 +28,7 @@ Modifying kernel, busybox, or buildroot configuration:
     default settings only, in a file 'defconfig'. The configs maintained
     in git are such *defconfigs* (i.e., NOT full configuration files).
     However, note that there is currently no automated way to separate
-    arch-specific settings and generic settings, which means that you
+    arch-specific settings and common settings, which means that you
     must do this manually.
 
     In order to help with this process the br-installconf.sh script
@@ -52,7 +52,7 @@ Modifying kernel, busybox, or buildroot configuration:
     These diffs must then be manually copied into the 
         site/config/br-<version>-<arch>.config
     and
-        site/config/br-<version>-generic.config
+        site/config/br-<version>-common.config
     depending on whether the setting applies to all architectures
     or a specific one only.
 
