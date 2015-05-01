@@ -177,7 +177,7 @@ Then execute
 
 were <arch> is one of:
   zynq
-  i386
+  i686
   x86_64
 
 Upon successful completion the script will install a '.stamp_br_installconf'

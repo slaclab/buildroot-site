@@ -12,7 +12,7 @@ while true; do
 	case "$1" in
 		-h )
 			echo "Usage: $0 -a <buildroot_arch> [-pfd]"
-			echo "          -a zynq | x86_64 | i386"
+			echo "          -a zynq | x86_64 | i686"
 			echo "          -p omit patching buildroot (if already done)"
 			echo "          -f force rerun (if already done)"
 			echo "          -d dry-run"
@@ -33,11 +33,11 @@ while true; do
 		;;
 		-a )
 			case "$2" in
-				"zynq" | "i386" | "x86_64")
+				"zynq" | "i686" | "x86_64")
 					ARCH="$2"
 					case "$2" in
 						"zynq")            KARCH="$2"  ;;
-						"i386" | "x86_64") KARCH="x86" ;;
+						"i686" | "x86_64") KARCH="x86" ;;
 					esac
 				;;
 				*)
@@ -60,7 +60,7 @@ done
 
 if [ -z "$ARCH" ] ; then
 	echo "Error: No target architecture given" >&2
-	echo "Usage: $0 -a <zynq | i386 | x86_64>" >&2
+	echo "Usage: $0 -a <zynq | i686 | x86_64>" >&2
 	exit 1;
 fi
 
