@@ -1,5 +1,8 @@
 T.S.  2014/10/13
 
+CLONING SLAC-CONFIGURATION OF BUILDROOT
+=======================================
+
 Directory Structure
 -------------------
 
@@ -215,3 +218,21 @@ NOTE: if your main build machine has no access to the internet then
 
 This process is explained in a separate README.buildroot.modify_config
 file.
+
+6. Version Control
+------------------
+(Gzipped) copies of 
+  - buildroot config file
+  - linux kernel config file
+  - busybox config file
+as well as the output of 'git describe --dirty site/' which captures
+the state of the slac-specific configuration(s) are stored in the
+target's rootfs under
+
+  /etc/site/
+
+The kernel configuration is the configuration effective when buildroot
+was compiled. This can be compared agains the run-time kernel config
+information available at
+
+  /proc/config.gz
