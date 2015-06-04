@@ -1,8 +1,8 @@
 *** linux-3.18.9/arch/arm/boot/dts/zynq-fpga.dtsi.orig	1969-12-31 16:00:00.000000000 -0800
---- linux-3.18.9/arch/arm/boot/dts/zynq-fpga.dtsi	2015-03-11 12:44:35.411075870 -0700
+--- linux-3.18.9/arch/arm/boot/dts/zynq-fpga.dtsi	2015-05-19 00:09:20.000000002 -0700
 ***************
 *** 0 ****
---- 1,106 ----
+--- 1,113 ----
 + /*
 +  *  Copyright (C) 2011 - 2014 Xilinx
 +  *  Copyright (C) 2012 National Instruments Corp.
@@ -92,6 +92,13 @@
 + 			reg = <0x43c09000 0x1000>;
 + 			interrupt-parent = <&intc>;
 + 			interrupts = <0 53 4 >;
++ 		};
++ 
++ 		ps7-axislv10@43c20000 {
++ 			compatible = "generic-uio";
++ 			reg = <0x43c20000 0x20000>;
++ 			interrupt-parent = <&intc>;
++ 			interrupts = <0 54 4 >;
 + 		};
 + 	};
 + 
