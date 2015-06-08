@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# Scan busses for devices and trigger module loading...
+#
+
+
+case "$1" in
+	start)
+		find /sys -name modalias -exec sh -c 'modprobe -q `cat {}`' \;
+	;;
+
+	stop)
+		:
+	;;
+
+	*)
+		echo $"Usage: $0 {start|stop}"
+		exit 1;
+	;;
+esac
+
+exit $?
