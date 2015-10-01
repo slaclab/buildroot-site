@@ -29,7 +29,7 @@ case "$1" in
 				tftp -r $TFTP_PATH -l $BOOTFILE -g $TFTP_HOST && chmod a+x $BOOTFILE
 			fi
 			echo "Executing BOOTFILE: $BOOTFILE"
-			exec "$BOOTFILE"
+			eval exec "$BOOTFILE"
 			echo "Executing bootfile FAILED"
 			exit 1
 		fi
