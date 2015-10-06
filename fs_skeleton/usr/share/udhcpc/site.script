@@ -85,6 +85,12 @@ case "$1" in
 		if [ -n "$boot_file" ] ; then
 			echo "$boot_file" > /etc/bootfile
 		fi
+
+		# save timezone info
+		if [ -n "$posixtzstring" ] ; then
+			# no -n! terminating \n is required (man tzfile)
+			echo -e `tr -d '\012' < /etc/localtime.template`"$posixtzstring" > /etc/localtime
+		fi
 		;;
 esac
 
