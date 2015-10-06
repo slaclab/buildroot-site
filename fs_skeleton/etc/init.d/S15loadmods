@@ -6,7 +6,7 @@
 
 case "$1" in
 	start)
-		find /sys -name uevent -exec sh -c 'echo -n add > {}' \;
+		. /etc/init.d/loadmods.sh
 	;;
 
 	stop)
