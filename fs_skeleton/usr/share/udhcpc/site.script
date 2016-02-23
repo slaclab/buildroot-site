@@ -68,8 +68,8 @@ case "$1" in
 		fi
 
 		if [ -n "$IF_ROOTPATH" ] ; then
-			mntpt=`echo "$IF_ROOTPATH" | awk 'BEGIN{FS=":"}{print $3}'`;
-			fsline=`echo "$IF_ROOTPATH" | awk 'BEGIN{FS=":"}{print $1":"$2,$3,"nfs","ro,nolock,noac",0,0}'`;
+			mntpt=`eval echo "$IF_ROOTPATH" | awk 'BEGIN{FS=":"}{print $3}'`;
+			fsline=`eval echo "$IF_ROOTPATH" | awk 'BEGIN{FS=":"}{print $1":"$2,$3,"nfs","ro,nolock,noac",0,0}'`;
 			# Make sure mount point exists
 			mkdir -p "$mntpt"
 			if ! grep -q "$fsline" /etc/fstab ; then
@@ -84,6 +84,12 @@ case "$1" in
 		# save bootfile for inittab entry to pick up later
 		if [ -n "$boot_file" ] ; then
 			echo "$boot_file" > /etc/bootfile
+		fi
+
+		# save timezone info
+		if [ -n "$posixtzstring" ] ; then
+			# no -n! terminating \n is required (man tzfile)
+			echo -e `tr -d '\012' < /etc/localtime.template`"$posixtzstring" > /etc/localtime
 		fi
 		;;
 esac

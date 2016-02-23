@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# Scan busses for devices and trigger module loading...
+# Scan sysfs for nodes and trigger module loading and other coldplug business...
 #
 
 
 case "$1" in
 	start)
-		find /sys -name modalias -exec sh -c 'modprobe -q `cat {}`' \;
+		. /etc/init.d/loadmods.sh
 	;;
 
 	stop)
