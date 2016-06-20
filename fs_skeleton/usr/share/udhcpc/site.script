@@ -69,7 +69,7 @@ case "$1" in
 
 		if [ -n "$IF_ROOTPATH" ] ; then
 			mntpt=`eval echo "$IF_ROOTPATH" | awk 'BEGIN{FS=":"}{print $3}'`;
-			fsline=`eval echo "$IF_ROOTPATH" | awk 'BEGIN{FS=":"}{print $1":"$2,$3,"nfs","ro,nolock,noac",0,0}'`;
+			fsline=`eval echo "$IF_ROOTPATH" | awk 'BEGIN{FS=":"}{print $1":"$2,$3,"nfs","ro,nolock,noac,soft",0,0}'`;
 			# Make sure mount point exists
 			mkdir -p "$mntpt"
 			if ! grep -q "$fsline" /etc/fstab ; then
