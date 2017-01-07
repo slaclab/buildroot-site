@@ -1,16 +1,16 @@
- - enable zlib for kmod (so it can deal with gzipped modules)
- - disable tests (work around hard-links which are unavailable under AFS)
-*** package/kmod/kmod.mk.orig	2015-03-01 13:26:12.000000000 -0800
---- package/kmod/kmod.mk	2015-04-24 20:36:56.265676815 -0700
+- enable zlib for kmod (so it can deal with gzipped modules)
+- disable tests (work around hard-links which are unavailable under AFS)
+*** package/kmod/kmod.mk.orig	2016-12-29 12:54:33.000000000 -0800
+--- package/kmod/kmod.mk	2017-01-05 14:43:14.938242750 -0800
 ***************
-*** 11,28 ****
-  # For kmod-0002-add-backup-implementation-of-be32toh.patch
-  KMOD_AUTORECONF = YES
+*** 9,26 ****
+  KMOD_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/kernel/kmod
+  KMOD_INSTALL_STAGING = YES
   KMOD_DEPENDENCIES = host-pkgconf
 ! HOST_KMOD_DEPENDENCIES = host-pkgconf
   
   # license info for libkmod only, conditionally add more below
-  KMOD_LICENSE = LGPLv2.1+
+  KMOD_LICENSE = LGPLv2.1+ (library)
   KMOD_LICENSE_FILES = libkmod/COPYING
   
   # static linking not supported, see
@@ -22,22 +22,22 @@
   
   ifeq ($(BR2_PACKAGE_ZLIB),y)
   KMOD_DEPENDENCIES += zlib
---- 11,39 ----
-  # For kmod-0002-add-backup-implementation-of-be32toh.patch
-  KMOD_AUTORECONF = YES
+--- 9,37 ----
+  KMOD_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/kernel/kmod
+  KMOD_INSTALL_STAGING = YES
   KMOD_DEPENDENCIES = host-pkgconf
 ! HOST_KMOD_DEPENDENCIES = host-pkgconf host-zlib
   
   # license info for libkmod only, conditionally add more below
-  KMOD_LICENSE = LGPLv2.1+
+  KMOD_LICENSE = LGPLv2.1+ (library)
   KMOD_LICENSE_FILES = libkmod/COPYING
   
 + # T.S: testsuite contains hard links which are not supported under AFS
 + #  argument 1 is the uppercase package name, including an HOST_ prefix
 + #             for host packages
 + define kmod-extract
-+ 	$(INFLATE$(suffix $(KMOD_SOURCE))) $(DL_DIR)/$(KMOD_SOURCE) | \
-+ 	$(TAR) $(TAR_STRIP_COMPONENTS)=1 --exclude=testsuite -C $($(1)_DIR) $(TAR_OPTIONS) -
++       $(INFLATE$(suffix $(KMOD_SOURCE))) $(DL_DIR)/$(KMOD_SOURCE) | \
++       $(TAR) --strip-components=1 --exclude=testsuite -C $($(1)_DIR) $(TAR_OPTIONS) -
 + endef
 + 
 + HOST_KMOD_EXTRACT_CMDS = $(call kmod-extract,HOST_KMOD)

@@ -1,6 +1,8 @@
 #!/bin/sh
 TEMP=`getopt -o a:hpfdOL -n "$0" -- "$@"`
 
+unset DRY_RUN
+
 if [ $? != 0 ] ; then
 	echo "getopt error - terminating..." >&2;
 	exit 1;
@@ -60,11 +62,7 @@ while true; do
 done
 
 get_makevar() {
-	make ${MKOUTDIR} -f - print-var <<EOF
-include Makefile
-print-var:
-	@echo \$(${1})
-EOF
+        make ${MKOUTDIR} printvars VARS=${1} | awk 'BEGIN{ FS="[ =]" }/'"${1}"'/{print $2}'
 }
 
 restore() {
@@ -155,7 +153,7 @@ if [ "$LCONF"x != "yx" ] ; then
 			touch .stamp_br_patched
 		fi
 	else
-		if cat site/br-patches/buildroot* | patch ${DRY_RUN} -p0 -b ; then
+		if cat site/br-patches/buildroot* | patch ${DRY_RUN} --posix --verbose -p0 -b ; then
 			if [ -z "${DRY_RUN}" ] ; then
 				touch .stamp_br_patched
 			fi
@@ -174,6 +172,7 @@ if [ "$LCONF"x != "yx" ] ; then
 	if [ -f ${CONF_DIR}/.config ] ; then
 		mv ${CONF_DIR}/.config ${CONF_DIR}/.config.bup
 	fi
+	echo "cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-common.config > ${CONF_DIR}/.config"
 	cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-common.config > ${CONF_DIR}/.config
 	if [ $? != 0 ] ; then
 		echo "Error: unable to install .config file" >&2
