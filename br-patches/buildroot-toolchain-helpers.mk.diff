@@ -1,0 +1,20 @@
+*** toolchain/helpers.mk.orig	2017-09-06 16:07:54.073202237 -0700
+--- toolchain/helpers.mk	2017-09-06 17:10:37.140600002 -0700
+***************
+*** 20,26 ****
+  			if test -h $${LIBPATH} ; then \
+  				cp -d $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
+  				LIBPATH="`readlink -f $${LIBPATH}`"; \
+! 			elif test -f $${LIBPATH}; then \
+  				$(INSTALL) -D -m0755 $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
+  				break ; \
+  			else \
+--- 20,27 ----
+  			if test -h $${LIBPATH} ; then \
+  				cp -d $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
+  				LIBPATH="`readlink -f $${LIBPATH}`"; \
+! 			fi; \
+! 			if test -f $${LIBPATH}; then \
+  				$(INSTALL) -D -m0755 $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
+  				break ; \
+  			else \
