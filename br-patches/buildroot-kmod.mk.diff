@@ -1,37 +1,24 @@
-- enable zlib for kmod (so it can deal with gzipped modules)
-- disable tests (work around hard-links which are unavailable under AFS)
-*** package/kmod/kmod.mk.orig	2016-12-29 12:54:33.000000000 -0800
---- package/kmod/kmod.mk	2017-01-05 14:43:14.938242750 -0800
+*** package/kmod/kmod.mk.orig	2017-09-05 23:33:31.956827198 -0700
+--- package/kmod/kmod.mk	2017-09-05 23:44:04.895314419 -0700
 ***************
-*** 9,26 ****
+*** 3,15 ****
+  # kmod
+  #
+  ################################################################################
+  
+  KMOD_VERSION = 24
+  KMOD_SOURCE = kmod-$(KMOD_VERSION).tar.xz
   KMOD_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/kernel/kmod
   KMOD_INSTALL_STAGING = YES
   KMOD_DEPENDENCIES = host-pkgconf
 ! HOST_KMOD_DEPENDENCIES = host-pkgconf
   
   # license info for libkmod only, conditionally add more below
-  KMOD_LICENSE = LGPLv2.1+ (library)
-  KMOD_LICENSE_FILES = libkmod/COPYING
-  
-  # static linking not supported, see
-  # https://git.kernel.org/cgit/utils/kernel/kmod/kmod.git/commit/?id=b7016153ec8
-  KMOD_CONF_OPTS = --disable-static --enable-shared
-  
-  KMOD_CONF_OPTS += --disable-manpages
-! HOST_KMOD_CONF_OPTS = --disable-manpages
-  
-  ifeq ($(BR2_PACKAGE_ZLIB),y)
-  KMOD_DEPENDENCIES += zlib
---- 9,37 ----
-  KMOD_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/kernel/kmod
-  KMOD_INSTALL_STAGING = YES
-  KMOD_DEPENDENCIES = host-pkgconf
-! HOST_KMOD_DEPENDENCIES = host-pkgconf host-zlib
-  
-  # license info for libkmod only, conditionally add more below
-  KMOD_LICENSE = LGPLv2.1+ (library)
-  KMOD_LICENSE_FILES = libkmod/COPYING
-  
+  KMOD_LICENSE = LGPL-2.1+ (library)
+--- 3,25 ----
+  # kmod
+  #
+  ################################################################################
 + # T.S: testsuite contains hard links which are not supported under AFS
 + #  argument 1 is the uppercase package name, including an HOST_ prefix
 + #             for host packages
@@ -42,9 +29,26 @@
 + 
 + HOST_KMOD_EXTRACT_CMDS = $(call kmod-extract,HOST_KMOD)
 + KMOD_EXTRACT_CMDS = $(call kmod-extract,KMOD)
-+ 
-  # static linking not supported, see
-  # https://git.kernel.org/cgit/utils/kernel/kmod/kmod.git/commit/?id=b7016153ec8
+  
+  KMOD_VERSION = 24
+  KMOD_SOURCE = kmod-$(KMOD_VERSION).tar.xz
+  KMOD_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/kernel/kmod
+  KMOD_INSTALL_STAGING = YES
+  KMOD_DEPENDENCIES = host-pkgconf
+! HOST_KMOD_DEPENDENCIES = host-pkgconf host-zlib
+  
+  # license info for libkmod only, conditionally add more below
+  KMOD_LICENSE = LGPL-2.1+ (library)
+***************
+*** 26,32 ****
+  KMOD_CONF_OPTS = --disable-static --enable-shared
+  
+  KMOD_CONF_OPTS += --disable-manpages
+! HOST_KMOD_CONF_OPTS = --disable-manpages
+  
+  ifeq ($(BR2_PACKAGE_ZLIB),y)
+  KMOD_DEPENDENCIES += zlib
+--- 36,42 ----
   KMOD_CONF_OPTS = --disable-static --enable-shared
   
   KMOD_CONF_OPTS += --disable-manpages

@@ -1,20 +1,22 @@
-*** package/e2fsprogs/e2fsprogs.mk.orig	2016-12-29 12:54:33.000000000 -0800
---- package/e2fsprogs/e2fsprogs.mk	2017-01-05 14:46:30.754850234 -0800
+*** ../package/e2fsprogs/e2fsprogs.mk.orig	2017-09-05 23:33:31.900828741 -0700
+--- ../package/e2fsprogs/e2fsprogs.mk	2017-09-05 23:35:43.697192869 -0700
 ***************
-*** 31,39 ****
---- 31,45 ----
+*** 32,37 ****
+--- 32,38 ----
+  	--disable-fuse2fs \
+  	--disable-libblkid \
   	--disable-libuuid \
-  	--enable-fsck \
-  	--disable-e2initrd-helper \
 + 	--enable-symlink-build \
-+ 	--enable-symlink-install \
-  	--disable-testio-debug \
-  	--disable-rpath
+  	--enable-symlink-install \
+  	--disable-testio-debug
   
-+ HOST_E2FSPROGS_CONF_OPTS = \
+***************
+*** 52,57 ****
+--- 53,59 ----
+  	--disable-e2initrd-helper \
+  	--disable-testio-debug \
+  	--disable-rpath \
 + 	--enable-symlink-build \
-+ 	--enable-symlink-install
-+ 
+  	--enable-symlink-install
+  
   ifeq ($(BR2_PACKAGE_E2FSPROGS_FUSE2FS),y)
-  E2FSPROGS_CONF_OPTS += --enable-fuse2fs
-  E2FSPROGS_DEPENDENCIES += libfuse
