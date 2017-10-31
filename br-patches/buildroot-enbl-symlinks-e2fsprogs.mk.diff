@@ -1,5 +1,5 @@
-*** ../package/e2fsprogs/e2fsprogs.mk.orig	2017-09-05 23:33:31.900828741 -0700
---- ../package/e2fsprogs/e2fsprogs.mk	2017-09-05 23:35:43.697192869 -0700
+*** package/e2fsprogs/e2fsprogs.mk.orig	2017-09-05 23:33:31.900828741 -0700
+--- package/e2fsprogs/e2fsprogs.mk	2017-09-05 23:35:43.697192869 -0700
 ***************
 *** 32,37 ****
 --- 32,38 ----
