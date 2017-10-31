@@ -1,0 +1,21 @@
+*** package/busybox/inittab.orig	2017-10-29 23:15:18.349816886 -0700
+--- package/busybox/inittab	2017-10-29 23:16:05.300444729 -0700
+***************
+*** 23,29 ****
+  # now run any rc scripts
+  ::sysinit:/etc/init.d/rcS
+  
+! # Put a getty on the serial port
+  #ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
+  
+  # Stuff to do for the 3-finger salute
+--- 23,31 ----
+  # now run any rc scripts
+  ::sysinit:/etc/init.d/rcS
+  
+! # Put a getty on the console (first serial port for most systems)
+! ::respawn:/sbin/getty -L console 0 vt100
+! # Put a getty on a secondary serial port
+  #ttyS0::respawn:/sbin/getty -L ttyS0 115200 vt100 # GENERIC_SERIAL
+  
+  # Stuff to do for the 3-finger salute
