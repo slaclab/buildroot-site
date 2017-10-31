@@ -1,0 +1,22 @@
+diff -crN linux-4.13.4/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts ../linux-4.13.4/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts
+*** linux-4.13.4/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts	2017-09-27 05:43:35.000000000 -0700
+--- ../linux-4.13.4/arch/arm/boot/dts/sun8i-h3-nanopi-neo.dts	2017-10-29 14:24:26.514710317 -0700
+***************
+*** 46,48 ****
+--- 46,61 ----
+  	model = "FriendlyARM NanoPi NEO";
+  	compatible = "friendlyarm,nanopi-neo", "allwinner,sun8i-h3";
+  };
++ 
++ &usb_otg {
++     status  = "okay";
++     dr_mode = "peripheral";
++ };
++ 
++ &ehci0 {
++     status  = "okay";
++ };
++ 
++ &ohci0 {
++     status  = "okay";
++ };
