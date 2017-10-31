@@ -14,7 +14,7 @@ while true; do
 	case "$1" in
 		-h )
 			echo "Usage: $0 -a <buildroot_arch> [-pfd]"
-			echo "          -a zynq | x86_64 | i686"
+			echo "          -a zynq | x86_64 | i686 | nanopi"
 			echo "          -p omit patching buildroot (if already done)"
 			echo "          -f force rerun (if already done)"
 			echo "          -L just update linux configuration"
@@ -36,7 +36,7 @@ while true; do
 		;;
 		-a )
 			case "$2" in
-				"zynq" | "i686" | "x86_64")
+				"zynq" | "i686" | "x86_64" | "nanopi")
 					ARCH="$2"
 				;;
 				*)
@@ -83,7 +83,8 @@ install_linux_conf() {
 		mv ${CONF_DIR}/linux-${LINUX_VER}.config ${CONF_DIR}/linux-${LINUX_VER}.config.bup
 	fi
 	if [ -f site/config/linux-${LINUX_VER}-common.config -a -f site/config/linux-${LINUX_VER}-${KARCH}.config ] ; then
-		cat site/config/linux-${LINUX_VER}-common.config site/config/linux-${LINUX_VER}-${KARCH}.config  > ${CONF_DIR}/linux-${LINUX_VER}.config
+		# Allow arch-specific snippet to override common settings
+		cat site/config/linux-${LINUX_VER}-${KARCH}.config site/config/linux-${LINUX_VER}-common.config | sort -b -t= -k1,1 -u   > ${CONF_DIR}/linux-${LINUX_VER}.config
 		cp ${CONF_DIR}/linux-${LINUX_VER}.config ${CONF_DIR}/linux-${LINUX_VER}.config.orig
 		if [ -f ${CONF_DIR}/output/build/linux-${LINUX_VER}/.config ] ; then
 			cp -b ${CONF_DIR}/output/build/linux-${LINUX_VER}/.config ${CONF_DIR}/output/build/linux-${LINUX_VER}/.config.bup
@@ -111,7 +112,7 @@ if [ -z "${OOF_TREE}" -a -f ./.stamp_br_installconf ] ; then
 fi
 if [ -z "$ARCH" ] ; then
 	echo "Error: No target architecture given" >&2
-	echo "Usage: $0 -a <zynq | i686 | x86_64>" >&2
+	echo "Usage: $0 -a <zynq | i686 | x86_64 | nanopi>" >&2
 	exit 1;
 fi
 
@@ -172,8 +173,8 @@ if [ "$LCONF"x != "yx" ] ; then
 	if [ -f ${CONF_DIR}/.config ] ; then
 		mv ${CONF_DIR}/.config ${CONF_DIR}/.config.bup
 	fi
-	echo "cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-common.config > ${CONF_DIR}/.config"
-	cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-common.config > ${CONF_DIR}/.config
+	echo "cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-common.config | sort -b -t= -k1,1 -u > ${CONF_DIR}/.config"
+	cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-common.config | sort -b -t= -k1,1 -u > ${CONF_DIR}/.config
 	if [ $? != 0 ] ; then
 		echo "Error: unable to install .config file" >&2
 		restore
