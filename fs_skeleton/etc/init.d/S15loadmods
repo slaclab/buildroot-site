@@ -6,6 +6,11 @@
 
 case "$1" in
 	start)
+        if [ -f /etc/modules ] ; then
+          for mod in `grep -v '^[ \t]*[#]' /etc/modules`; do
+            modprobe $mod
+          done
+        fi
 		. /etc/init.d/loadmods.sh
 	;;
 
@@ -14,7 +19,7 @@ case "$1" in
 	;;
 
 	*)
-		echo $"Usage: $0 {start|stop}"
+		echo "Usage: $0 {start|stop}"
 		exit 1;
 	;;
 esac
