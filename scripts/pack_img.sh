@@ -1,12 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 echo =========
 echo $*
 echo =========
 
-# If there are .dtb files then we want to make a uboot
-# image for zynq.
-if [ -f $1/zynq-zybo.dtb -a -f $1/zynq-zc706.dtb ] ; then
-	mkimage  -f - $1/linux.fit <<-"END_OF_FIT"
+header () {
+cat <<"END_OF_HEADER"
 	/*
 	 * Simple U-boot uImage source file containing a single kernel and FDT blob
 	 */
@@ -34,32 +32,6 @@ if [ -f $1/zynq-zybo.dtb -a -f $1/zynq-zc706.dtb ] ; then
 					algo = "sha1";
 				};
 			};
-			fdt@1 {
-				description = "Flattened Device Tree blob (zc706)";
-				data = /incbin/("./output/images/zynq-zc706.dtb");
-				type = "flat_dt";
-				arch = "arm";
-				compression = "none";
-				hash@1 {
-					algo = "crc32";
-				};
-				hash@2 {
-					algo = "sha1";
-				};
-			};
-			fdt@2 {
-				description = "Flattened Device Tree blob (zybo)";
-				data = /incbin/("./output/images/zynq-zybo.dtb");
-				type = "flat_dt";
-				arch = "arm";
-				compression = "none";
-				hash@1 {
-					algo = "crc32";
-				};
-				hash@2 {
-					algo = "sha1";
-				};
-			};
 			ramdisk@1 {
 				description = "buildroot-ramdisk";
 				data = /incbin/("./output/images/rootfs.ext2.gz");
@@ -73,26 +45,63 @@ if [ -f $1/zynq-zybo.dtb -a -f $1/zynq-zc706.dtb ] ; then
 					algo = "sha1";
 				};
 			};
-		};
+END_OF_HEADER
+}
 
-		configurations {
-			default = "conf@1";
-			conf@1 {
-				description = "Boot Linux kernel with zc706 FDT blob";
-				kernel = "kernel@1";
-				ramdisk = "ramdisk@1";
-				fdt = "fdt@1";
+fdts () {
+  idx=1
+  for i in $*; do
+	echo "			fdt@${idx} {"
+	echo '				data = /incbin/("'"${i}"'");'
+	cat  <<END_OF_BLOB
+				description = "Flattened Device Tree blob (`basename ${i} .dtb`)";
+				type = "flat_dt";
+				arch = "arm";
+				compression = "none";
+				hash@1 {
+					algo = "crc32";
+				};
+				hash@2 {
+					algo = "sha1";
+				};
 			};
+END_OF_BLOB
+	((idx++))
+  done
+  echo '		};'
+}
 
-			conf@2 {
-				description = "Boot Linux kernel with zybo FDT blob";
-				kernel = "kernel@1";
-				ramdisk = "ramdisk@1";
-				fdt = "fdt@2";
-			};
+configs () {
+	echo '		configurations {'
+	echo '			default = "conf@1";'
+	idx=1
+  	for i in $*; do
+		echo '			conf@'"${idx}"' {'
+		echo '				description = "Boot Linux kernel with FDT for '"`basename $i .dtb`"'";'
+		echo '				kernel = "kernel@1";'
+		echo '				ramdisk = "ramdisk@1";'
+		echo '				fdt = "fdt@'"${idx}"'";'
+		echo '			};'
+		((idx++))
+	done
+	echo '		};'
+}
 
-		};
+fit () {
+	header
+	fdts $*
+	configs $*
+	echo '	};'
+}
 
-	};
-	END_OF_FIT
-fi
+# If there are .dtb files then we want to make a uboot
+# image for zynq.
+DTBS=
+for feil in $1/*.dtb; do
+  if [ -f $feil ] ; then
+    DTBS="$DTBS $feil"
+  fi
+  if [ -n "$DTBS" ] ; then
+    fit $DTBS | mkimage -f - $1/linux.fit
+  fi
+done
