@@ -128,8 +128,8 @@
   
   / {
   	model = "Zynq ZC706 Development Board";
-*** linux-4.8.11/arch/arm/boot/dts/zynq-zybo.dts.orig	2017-01-06 15:12:54.475418986 -0800
---- linux-4.8.11/arch/arm/boot/dts/zynq-zybo.dts	2017-01-06 15:15:12.289942289 -0800
+*** linux-4.13.10/arch/arm/boot/dts/zynq-zybo.dts.orig	2017-10-27 01:39:17.000000000 -0700
+--- linux-4.13.10/arch/arm/boot/dts/zynq-zybo.dts	2017-11-06 21:19:17.469614422 -0800
 ***************
 *** 13,18 ****
 --- 13,19 ----
@@ -158,9 +158,35 @@
   	};
   
 ***************
-*** 67,69 ****
---- 68,74 ----
-  	dr_mode = "host";
+*** 38,43 ****
+--- 39,50 ----
+  		compatible = "usb-nop-xceiv";
+  		reset-gpios = <&gpio0 46 1>;
+  	};
++ 
++ 	prog_fpga0: prog-fpga0 {
++ 		compatible = "tills,fpga-programmer-1.0";
++		fpga-mgr   = <&devcfg>;
++ 		file       = "zybo-firmware.bin";
++ 	};
+  };
+  
+  &clkc {
+***************
+*** 63,69 ****
+  };
+  
+  &usb0 {
+! 	status = "okay";
+! 	dr_mode = "host";
+  	usb-phy = <&usb_phy0>;
+  };
+--- 70,80 ----
+  };
+  
+  &usb0 {
+! 	status  = "okay";
+! 	dr_mode = "peripheral";
   	usb-phy = <&usb_phy0>;
   };
 + 
