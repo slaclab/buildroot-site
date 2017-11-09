@@ -3,6 +3,8 @@ echo =========
 echo $*
 echo =========
 
+KERNEL_ADDR=0x46000000
+
 header () {
 cat <<"END_OF_HEADER"
 	/*
@@ -23,8 +25,8 @@ cat <<"END_OF_HEADER"
 				arch = "arm";
 				os = "linux";
 				compression = "none";
-				load = <00000000>;
-				entry = <00000000>;
+				load  = <#KERNEL_ADDR#>;
+				entry = <#KERNEL_ADDR#>;
 				hash@1 {
 					algo = "crc32";
 				};
@@ -101,7 +103,14 @@ for feil in $1/*.dtb; do
   if [ -f $feil ] ; then
     DTBS="$DTBS $feil"
   fi
+  case `basename $DTBS .dtb` in
+    *nanopi-neo)
+      KERNEL_ADDR=0x45000000
+    ;;
+    *)
+      KERNEL_ADDR=0x00000000
+  esac
   if [ -n "$DTBS" ] ; then
-    fit $DTBS | mkimage -f - $1/linux.fit
+    fit $DTBS | sed -e "s/#KERNEL_ADDR#/$KERNEL_ADDR/g" | mkimage -f - $1/linux.fit
   fi
 done
