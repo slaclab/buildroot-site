@@ -90,7 +90,6 @@ install_linux_conf() {
 			cp -b ${CONF_DIR}/output/build/linux-${LINUX_VER}/.config ${CONF_DIR}/output/build/linux-${LINUX_VER}/.config.bup
 			rm -f ${CONF_DIR}/output/build/linux-${LINUX_VER}/.stamp_configured
 		fi
-		rm -f 
 	else
 		echo "Error: linux config snippets for linux-${LINUX_VER} not found" >&2
 		if [ -z "${LCONF}" ] ; then
