@@ -1,0 +1,13 @@
+config BR2_PACKAGE_LIBEUDEV
+	bool "libeudev"
+    depends on !BR2_PACKAGE_EUDEV
+	depends on BR2_USE_WCHAR # needs C99 compiler
+	help
+	  !!!! This is not full eudev -- use the native eudev package
+	  !!!! if you want that. This package configures eudev so that
+	  !!!! usbip can be built (static libudev.a).
+	  This is useful if you want mdev but still need libudev.
+
+
+comment "libeudev needs a toolchain w/ wchar, dynamic library"
+	depends on !BR2_USE_WCHAR

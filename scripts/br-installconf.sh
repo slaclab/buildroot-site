@@ -172,8 +172,7 @@ if [ "$LCONF"x != "yx" ] ; then
 	if [ -f ${CONF_DIR}/.config ] ; then
 		mv ${CONF_DIR}/.config ${CONF_DIR}/.config.bup
 	fi
-	echo "cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-common.config | sort -b -t= -k1,1 -u -s > ${CONF_DIR}/.config"
-	cat site/config/br-${BR_VER}-${ARCH}.config site/config/br-${BR_VER}-common.config | sort -b -t= -k1,1 -u -s > ${CONF_DIR}/.config
+	make BR2_EXTERNAL=site/br2-external ${ARCH}_defconfig
 	if [ $? != 0 ] ; then
 		echo "Error: unable to install .config file" >&2
 		restore
@@ -183,9 +182,6 @@ if [ "$LCONF"x != "yx" ] ; then
 	if [ -f ${CONF_DIR}/.config.old ] ; then
 		cp ${CONF_DIR}/.config.old ${CONF_DIR}/.config.old.bup
 	fi
-
-	make ${MKOUTDIR} olddefconfig
-
 fi
 
 LINUX_VER=`get_makevar LINUX_VERSION`

@@ -1,0 +1,2 @@
+name: SITE_SLAC
+desc: core packages that we need but are not included with buildroot natively

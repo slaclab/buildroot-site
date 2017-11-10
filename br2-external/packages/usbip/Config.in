@@ -1,0 +1,6 @@
+config BR2_PACKAGE_USBIP 
+	bool "usbip" 
+	depends on BR2_PACKAGE_EUDEV || BR2_PACKAGE_LIBEUDEV
+	help 
+	  usbip and usbipd utilities (from kernel tree) to
+	  enable USB devices to be virtualized across the network
