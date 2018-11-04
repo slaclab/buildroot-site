@@ -20,6 +20,12 @@
 + / {
 + 	amba {
 + 
++ 		ps7-axislv@40000000 {
++ 			compatible = "generic-uio";
++ 			reg = <0x40000000 0x40000000>;
++ 			interrupt-parent = <&intc>;
++ 		};
++
 + 		ps7-axislv0@43c00000 {
 + 			compatible = "generic-uio";
 + 			reg = <0x43c00000 0x1000>;
