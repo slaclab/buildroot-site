@@ -8,4 +8,4 @@
 # the root filesystem and later (from S42nfsmount), after mounting NFS shares
 # in case a directory with modules is mounted.
 
-find /sys -name uevent -exec sh -c 'echo -n add > {}' \;
+find /sys -name uevent -exec sh -c 'echo -n add > "{}"' \;
