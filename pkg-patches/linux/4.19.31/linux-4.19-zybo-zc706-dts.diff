@@ -1,0 +1,44 @@
+*** linux-4.19/arch/arm/boot/dts/zynq-zc706.dts.orig	2018-11-06 15:08:30.441190461 -0800
+--- linux-4.19/arch/arm/boot/dts/zynq-zc706.dts	2018-11-06 15:08:48.784597455 -0800
+***************
+*** 5,10 ****
+--- 5,11 ----
+   */
+  /dts-v1/;
+  #include "zynq-7000.dtsi"
++ #include "zynq-fpga.dtsi"
+  
+  / {
+  	model = "Xilinx ZC706 board";
+***************
+*** 322,324 ****
+--- 323,329 ----
+  	pinctrl-names = "default";
+  	pinctrl-0 = <&pinctrl_usb0_default>;
+  };
++ 
++ &i2c0 {
++ 	status = "okay";
++ };
+*** linux-4.19/arch/arm/boot/dts/zynq-zybo.dts.orig	2018-10-21 23:37:37.000000000 -0700
+--- linux-4.19/arch/arm/boot/dts/zynq-zybo.dts	2018-11-06 15:05:05.915982290 -0800
+***************
+*** 5,10 ****
+--- 5,11 ----
+   */
+  /dts-v1/;
+  #include "zynq-7000.dtsi"
++ #include "zynq-fpga.dtsi"
+  
+  / {
+  	model = "Digilent Zybo board";
+***************
+*** 61,63 ****
+--- 62,68 ----
+  	dr_mode = "host";
+  	usb-phy = <&usb_phy0>;
+  };
++ 
++ &i2c0 {
++ 	status = "okay";
++ };

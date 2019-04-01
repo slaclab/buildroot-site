@@ -14,7 +14,7 @@ USBIP_LICENSE_FILES = COPYING
 USBIP_INSTALL_STAGING = YES 
 
 USBIP_EXTRACT_CMDS = \
-    $(INFLATE$(suffix $(USBIP_SOURCE))) $(DL_DIR)/$(USBIP_SOURCE) | \
+    $(INFLATE$(suffix $(USBIP_SOURCE))) $(LINUX_DL_DIR)/$(USBIP_SOURCE) | \
     $(TAR) --strip-components=$(USBIP_STRIP_COMPONENTS) \
         -C $(USBIP_DIR) --anchored --wildcards '*/tools/usb/usbip' \
         $(TAR_OPTIONS) -
