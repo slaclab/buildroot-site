@@ -50,7 +50,10 @@
 };
 
 &sdhci0 {
-	status = "okay";
+	status        = "okay";
+	/* broken-cd     = "true"; poll for CD at 1Hz */
+	non-removable = "true"; /* no CD              */
+	wp-inverted   = "true";
 };
 
 &uart0 {
@@ -65,8 +68,117 @@
 
 &i2c0 {
 	status = "okay";
+
+    i2c-mux@70 {
+		compatible     = "nxp,pca9546";
+		#address-cells = <1>;
+		#size-cells    = <0>;
+		reg            = <0x70>;
+
+/*
+		i2c@0 {
+			#address-cells = <1>;
+			#size-cells    = <0>;
+			reg            = <0>;
+			si5344@38 {
+				reg        = <0x68>;
+			};
+		};
+*/
+		/* SFP-2 (1/2 switched for routing reasons) */
+		i2c@1 {
+			#address-cells = <1>;
+			#size-cells    = <0>;
+			reg            = <0>;
+			
+			eeprom@50 {
+        		compatible = "atmel,24c02";
+				reg        = <0x50>;
+                read-only  = "true";
+			};
+			eeprom@51 {
+        		compatible = "atmel,24c02";
+				reg        = <0x51>;
+                read-only  = "true";
+			};
+		};
+		/* SFP-1 (1/2 switched for routing reasons) */
+		i2c@2 {
+			#address-cells = <1>;
+			#size-cells    = <0>;
+			reg            = <0>;
+
+			eeprom@50 {
+        		compatible = "atmel,24c02";
+				reg        = <0x50>;
+                read-only  = "true";
+			};
+			eeprom@51 {
+        		compatible = "atmel,24c02";
+				reg        = <0x51>;
+                read-only  = "true";
+			};
+		};
+	};
+
 };
 
 &i2c1 {
 	status = "okay";
+
+    eeprom@50 {
+		/* write-protect for now - MAC address is in there */
+        compatible = "atmel,24c02";
+        reg        = <0x50>;
+        read-only  = "true";
+    };
+
+    rtc@6f {
+		compatible = "isil,isl12022";
+        reg        = <0x6f>;
+	};
+
+/*
+    nvram@57 {
+		reg        = <0x57>;
+	};
+*/
+
+    si5338@70 {
+		compatible = "silabs,si5338";
+		reg        = <0x70>;
+        si5338,in_frequency3  = <25000000>;
+	};
+};
+
+&pinctrl0 {
+	sdhci0_pins: sdhci0_pinctl {
+/*
+		mux-cd {
+			groups = "gpio0_9_grp";
+			function = "sdio1_cd";
+		};
+
+		conf-cd {
+			groups = "gpio0_9_grp";
+			bias-high-impedance;
+			bias-pull-up;
+			slew-rate = <0>;
+			io-standard = <3>;
+		};
+*/
+
+		mux-wp {
+			groups = "gpio0_0_grp";
+			function = "sdio0_wp";
+		};
+
+		conf-wp {
+			groups = "gpio0_0_grp";
+			bias-high-impedance;
+			bias-pull-up;
+			slew-rate = <0>;
+			io-standard = <3>;
+		};
+	};
 };
