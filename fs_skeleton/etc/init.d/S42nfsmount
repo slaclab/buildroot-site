@@ -10,7 +10,7 @@ case "$1" in
 	;;
   stop)
 	echo -n "Unmounting NFS..."
-	/bin/umount -f -t nfs
+	/bin/umount -a -f -t nfs
 	;;
   restart|reload)
 	"$0" stop
