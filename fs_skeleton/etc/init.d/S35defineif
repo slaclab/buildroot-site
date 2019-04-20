@@ -24,6 +24,7 @@ case "$1" in
 				if ! grep -q "$i" /etc/network/interfaces ; then
 					echo "auto $i" >> /etc/network/interfaces
 					echo "iface $i inet dhcp" >> /etc/network/interfaces
+					echo "  WAIT_LINK_DELAY 10" >> /etc/network/interfaces
 					# override ROOTPATH for every IF
 					if [ -n "$ROOTPATH" ] ; then
 						echo "  ROOTPATH $ROOTPATH" >> /etc/network/interfaces
