@@ -10,8 +10,52 @@ NTPD_CONF="/etc/default/ntpd"
 [ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
 [ -n "$subnet" ] && NETMASK="netmask $subnet"
 
+function namlcmp() {
+  local l1
+  local l2
+  l1=`(for i in $1; do echo $i; done) | sort`
+  l2=`(for i in $2; do echo $i; done) | sort`
+  [ "$l1" = "$l2" ]
+}
+
+function dotesc() {
+	echo "$1" | sed -e 's/[.]/[.]/g'
+}
+
+function remdns() {
+    local patt
+	for i in $1; do
+		echo "removing nameserver $i"
+		patt='^nameserver.*'`dotesc "$i"`
+		sed -i -e '1{/'"$patt"'/bskip };1,/'"$patt"'/{/'"$patt"'/d};:skip' $RESOLV_CONF
+	done
+}
+
+function remntp() {
+	local patt
+	for i in "$1" ; do
+		echo "removing ntpserver $i"
+		patt='^server.*'`dotesc "$i"`
+		sed -i -e '1{/'"$patt"'/bskip };1,/'"$patt"'/{/'"$patt"'/d};:skip' /etc/ntp.conf
+	done
+}
+
 case "$1" in
 	deconfig)
+
+	( flock -n 9 || exit 1
+
+		if [ -f /tmp/udhcpd/"$IFACE".env ] ; then
+			. /tmp/udhcpd/"$IFACE".env
+
+			remdns $dns
+			remntp $NTPSERVERS
+
+			rm -f /tmp/udhcpd/"$IFACE".env
+		fi
+
+	) 9>/var/lock/udhcpc.lock
+
 		umount -af -t nfs
 
 		/sbin/ifconfig $interface 0.0.0.0
@@ -20,7 +64,15 @@ case "$1" in
 	renew|bound)
 		/sbin/ifconfig $interface $ip $BROADCAST $NETMASK
 
-		if [ -n "$router" ] ; then
+		if [ -f /tmp/udhcpd/"$interface".env ] ; then
+			oldntp=`(. /tmp/udhcpd/"$interface".env && echo "$NTPSERVERS")`
+			olddns=`(. /tmp/udhcpd/"$interface".env && echo "$dns")`
+		fi
+
+	( flock -n 9 || exit 1
+
+
+		if [ -n "$router" ] && ! (route | grep -q "^default.*$router") ; then
 			echo "deleting routers"
 			while route del default gw 0.0.0.0 dev $interface > /dev/null 2>&1 ; do
 				:
@@ -31,12 +83,27 @@ case "$1" in
 			done
 		fi
 
-		echo -n > $RESOLV_CONF
-		[ -n "$domain" ] && echo search $domain >> $RESOLV_CONF
-		for i in $dns ; do
-			echo adding dns $i
-			echo nameserver $i >> $RESOLV_CONF
-		done
+		if [ ! -e $RESOLV_CONF ] ; then
+			echo -n > $RESOLV_CONF
+		fi
+
+		# Only one domain possible/acceptable
+		if [ -n "$domain" ] && ! grep -q "^domain.*$domain" $RESOLV_CONF ; then
+			# remove old entry
+			echo "replacing domain in $RESOLV_CONF"
+			sed -i -e '/^domain\>/d' $RESOLV_CONF
+		    echo domain $domain >> $RESOLV_CONF
+		fi
+
+		if ! namlcmp $dns $olddns ; then
+			echo "Adding nameservers $dns"
+			for i in $dns ; do
+				if ! grep "^nameserver.*$dns" $RESOLV_CONF; then
+					echo adding dns $i
+					echo nameserver $i >> $RESOLV_CONF
+				fi
+			done
+		fi
 
 		if [ -n "$hostname" -a "$hostname" != `hostname` ] ; then
 			echo "setting hostname: $hostname"
@@ -49,18 +116,22 @@ case "$1" in
 				echo "setting NTP servers in $NTPD_CONF: $ntpsrv"
 				sed -i -e 's/NTPSERVERS.*/NTPSERVERS="'"$ntpsrv"'"/g' $NTPD_CONF
 			fi
-			NTPSERVERS="$ntpsrv"
+			export NTPSERVERS="$ntpsrv"
 		else
 			if [ -r $NTPD_CONF ] ; then
-				NTPSERVERS="`( . $NTPD_CONF; echo -n $NTPSERVERS)`"
+				export NTPSERVERS="`( . $NTPD_CONF; echo -n $NTPSERVERS)`"
 			fi
 		fi
-		if [ -n "$NTPSERVERS" ] ; then
-			echo "creating /etc/ntp.conf"
-			rm -f /etc/ntp.conf
-			for i in $NTPSERVERS ; do
-				echo "server $i" >> /etc/ntp.conf
-			done
+
+		if ! namlcmp $NTPSERVERS $oldntp ; then
+			remntp $oldntp
+
+			if [ -n "$NTPSERVERS" ] ; then
+				echo "adding NTP servers $NTPSERVERS to /etc/ntp.conf"
+				for i in $NTPSERVERS ; do
+					echo "server $i" >> /etc/ntp.conf
+				done
+			fi
 		fi
 
 		if [ -z "$IF_ROOTPATH" -a -n "$rootpath" ] ; then
@@ -68,8 +139,8 @@ case "$1" in
 		fi
 
 		if [ -n "$IF_ROOTPATH" ] ; then
-			mntpt=`eval echo "$IF_ROOTPATH" | awk 'BEGIN{FS=":"}{print $3}'`;
-			fsline=`eval echo "$IF_ROOTPATH" | awk 'BEGIN{FS=":"}{print $1":"$2,$3,"nfs","ro,nolock,noac,soft",0,0}'`;
+			mntpt=`eval echo "$IF_ROOTPATH" | awk 'BEGIN{FS="[: ]"}{print $3}'`;
+			fsline=`eval echo "$IF_ROOTPATH" | awk 'BEGIN{FS="[: ]"}{print $1":"$2,$3,"nfs","ro,nolock,noac,soft",0,0}'`;
 			# Make sure mount point exists
 			mkdir -p "$mntpt"
 			if ! grep -q "$fsline" /etc/fstab ; then
@@ -91,6 +162,11 @@ case "$1" in
 			# no -n! terminating \n is required (man tzfile)
 			echo -e `tr -d '\012' < /etc/localtime.template`"$posixtzstring" > /etc/localtime
 		fi
+
+		mkdir -p /tmp/udhcpd
+		printenv >/tmp/udhcpd/"$interface".env
+
+	) 9>/var/lock/udhcpc.lock
 		;;
 esac
 
