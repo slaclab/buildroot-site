@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# Handle init script
+#
+
+case "$1" in 
+
+	start)
+
+		echo "Looking for early (user) init script"
+		if [ -n "$BOOTCMD_EARLY" ] ; then
+			echo "Evaluating BOOTCMD_EARLY: sh -c \"$BOOTCMD_EARLY\""
+			/bin/sh -c "$BOOTCMD_EARLY"
+		fi
+	;;
+
+	stop)
+		:
+	;;
+
+	*)
+		echo $"usage: $0 {start|stop}"
+		exit 1
+esac
+
+exit $?
