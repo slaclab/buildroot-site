@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Avoid configuring an interface that has no live link
+# long either. IF_WAIT_LINK_DELAY is in seconds.
+
+ifconfig "${IFACE}" 0.0.0.0 up
+
+if [ "${IF_WAIT_LINK_DELAY}" -a -e "/sys/class/net/${IFACE}/carrier" ]; then
+    printf "Waiting for interface %s link to go live" "${IFACE}"
+    while [ ${IF_WAIT_LINK_DELAY} -gt 0 ]; do
+        if [ `cat /sys/class/net/"${IFACE}"/carrier` -eq 1 ] ; then
+            printf "\n"
+            exit 0
+        fi
+        sleep 1
+        printf "."
+        : $((IF_WAIT_LINK_DELAY -= 1))
+    done
+    printf " timeout!\n"
+    exit 1
+fi
