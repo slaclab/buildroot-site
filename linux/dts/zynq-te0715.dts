@@ -46,6 +46,16 @@
 	ethernet_phy: ethernet-phy@0 {
 		reg = <0>;
 		device_type = "ethernet-phy";
+		// Marvell 88E1510
+		// The LEDs don't work because of a hardware error
+		// on the TE0715 module (level translator three-stated
+		// permanently)
+		// Don't bother to load the driver - it doesn't seem
+		// to work reliably (interrupt?)
+	//		compatible  = "ethernet-phy-id0141.0dd0";
+	//	marvell,reg-init = <3 16 0xfff0 8>, <3 17 0xfffc 1>;
+	//	interrupt-parent = <&gpio0>;
+	//	interrupts       = <46 8>; // 8: active-low, level
 	};
 };
 
@@ -136,6 +146,8 @@
     rtc@6f {
 		compatible = "isil,isl12022";
         reg        = <0x6f>;
+		interrupt-parent = <&gpio0>;
+		interrupts       = <47   8>; // active-low, open drain!
 	};
 
 /*
@@ -179,6 +191,27 @@
 			bias-pull-up;
 			slew-rate = <0>;
 			io-standard = <3>;
+		};
+
+		mux-gpio-irq-46 {
+			groups = "gpio0_46_grp";
+			function = "gpio0";
+		};
+
+		conf-gpio-irq-46 {
+			groups = "gpio0_46_grp";
+			io-standard = <1>;
+		};
+
+		mux-gpio-irq-47 {
+			groups = "gpio0_47_grp";
+			function = "gpio0";
+		};
+
+		conf-gpio-irq-47 {
+			groups = "gpio0_47_grp";
+			io-standard = <1>;
+			bias-pull-up;
 		};
 	};
 };
