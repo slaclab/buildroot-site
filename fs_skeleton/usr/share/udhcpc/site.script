@@ -2,7 +2,10 @@
 
 # udhcpc script edited by Tim Riker <Tim@Rikers.org>
 
+
 [ -z "$1" ] && echo "Error: should be called from udhcpc" && exit 1
+
+echo "UDHCPC script; arg $1"
 
 RESOLV_CONF="/etc/resolv.conf"
 NTPD_CONF="/etc/default/ntpd"
@@ -48,8 +51,8 @@ case "$1" in
 		if [ -f /tmp/udhcpd/"$IFACE".env ] ; then
 			. /tmp/udhcpd/"$IFACE".env
 
-			remdns $dns
-			remntp $NTPSERVERS
+			remdns "$dns"
+			remntp "$NTPSERVERS"
 
 			rm -f /tmp/udhcpd/"$IFACE".env
 		fi
@@ -95,10 +98,11 @@ case "$1" in
 		    echo domain $domain >> $RESOLV_CONF
 		fi
 
-		if ! namlcmp $dns $olddns ; then
+		if ! namlcmp "$dns" "$olddns" ; then
+			remdns "$dns"
 			echo "Adding nameservers $dns"
 			for i in $dns ; do
-				if ! grep "^nameserver.*$dns" $RESOLV_CONF; then
+				if ! grep "^nameserver.*$i" $RESOLV_CONF; then
 					echo adding dns $i
 					echo nameserver $i >> $RESOLV_CONF
 				fi
@@ -123,8 +127,8 @@ case "$1" in
 			fi
 		fi
 
-		if ! namlcmp $NTPSERVERS $oldntp ; then
-			remntp $oldntp
+		if ! namlcmp "$NTPSERVERS" "$oldntp" ; then
+			remntp "$oldntp"
 
 			if [ -n "$NTPSERVERS" ] ; then
 				echo "adding NTP servers $NTPSERVERS to /etc/ntp.conf"
