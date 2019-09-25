@@ -1,12 +1,11 @@
-*** package/kmod/kmod.mk.orig	2017-09-05 23:33:31.956827198 -0700
---- package/kmod/kmod.mk	2017-09-05 23:44:04.895314419 -0700
+*** package/kmod/kmod.mk.orig	2019-09-01 14:06:01.000000000 -0700
+--- package/kmod/kmod.mk	2019-09-24 18:50:49.273090357 -0700
 ***************
-*** 3,15 ****
-  # kmod
+*** 4,15 ****
   #
   ################################################################################
   
-  KMOD_VERSION = 24
+  KMOD_VERSION = 26
   KMOD_SOURCE = kmod-$(KMOD_VERSION).tar.xz
   KMOD_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/kernel/kmod
   KMOD_INSTALL_STAGING = YES
@@ -15,22 +14,22 @@
   
   # license info for libkmod only, conditionally add more below
   KMOD_LICENSE = LGPL-2.1+ (library)
---- 3,25 ----
-  # kmod
+--- 4,26 ----
   #
   ################################################################################
+  
 + # T.S: testsuite contains hard links which are not supported under AFS
 + #  argument 1 is the uppercase package name, including an HOST_ prefix
 + #             for host packages
 + define kmod-extract
-+       $(INFLATE$(suffix $(KMOD_SOURCE))) $(DL_DIR)/$(KMOD_SOURCE) | \
++       $(INFLATE$(suffix $(KMOD_SOURCE))) $(KMOD_DL_DIR)/$(KMOD_SOURCE) | \
 +       $(TAR) --strip-components=1 --exclude=testsuite -C $($(1)_DIR) $(TAR_OPTIONS) -
 + endef
 + 
 + HOST_KMOD_EXTRACT_CMDS = $(call kmod-extract,HOST_KMOD)
 + KMOD_EXTRACT_CMDS = $(call kmod-extract,KMOD)
-  
-  KMOD_VERSION = 24
++ 
+  KMOD_VERSION = 26
   KMOD_SOURCE = kmod-$(KMOD_VERSION).tar.xz
   KMOD_SITE = $(BR2_KERNEL_MIRROR)/linux/utils/kernel/kmod
   KMOD_INSTALL_STAGING = YES
@@ -46,13 +45,13 @@
   KMOD_CONF_OPTS += --disable-manpages
 ! HOST_KMOD_CONF_OPTS = --disable-manpages
   
-  ifeq ($(BR2_PACKAGE_ZLIB),y)
-  KMOD_DEPENDENCIES += zlib
---- 36,42 ----
+  ifeq ($(BR2_PACKAGE_BASH_COMPLETION),y)
+  KMOD_CONF_OPTS += --with-bashcompletiondir=/usr/share/bash-completion/completions
+--- 37,43 ----
   KMOD_CONF_OPTS = --disable-static --enable-shared
   
   KMOD_CONF_OPTS += --disable-manpages
 ! HOST_KMOD_CONF_OPTS = --disable-manpages --with-zlib
   
-  ifeq ($(BR2_PACKAGE_ZLIB),y)
-  KMOD_DEPENDENCIES += zlib
+  ifeq ($(BR2_PACKAGE_BASH_COMPLETION),y)
+  KMOD_CONF_OPTS += --with-bashcompletiondir=/usr/share/bash-completion/completions

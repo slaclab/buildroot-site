@@ -1,18 +1,18 @@
-*** package/e2fsprogs/e2fsprogs.mk.orig	2017-09-05 23:33:31.900828741 -0700
---- package/e2fsprogs/e2fsprogs.mk	2017-09-05 23:35:43.697192869 -0700
+*** package/e2fsprogs/e2fsprogs.mk.orig	2019-09-01 14:06:01.000000000 -0700
+--- package/e2fsprogs/e2fsprogs.mk	2019-09-24 16:52:05.447145886 -0700
 ***************
-*** 32,37 ****
---- 32,38 ----
-  	--disable-fuse2fs \
+*** 27,32 ****
+--- 27,33 ----
   	--disable-libblkid \
   	--disable-libuuid \
+  	--disable-testio-debug \
 + 	--enable-symlink-build \
   	--enable-symlink-install \
-  	--disable-testio-debug
-  
+  	--enable-elf-shlibs \
+  	--with-crond-dir=no
 ***************
-*** 52,57 ****
---- 53,59 ----
+*** 48,53 ****
+--- 49,55 ----
   	--disable-e2initrd-helper \
   	--disable-testio-debug \
   	--disable-rpath \
