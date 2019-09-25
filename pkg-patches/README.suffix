@@ -1,2 +1,3 @@
 Any patches underneath must have a '.patch' suffix for
-buildroot to recognize them as patches
+buildroot to recognize them as patches (except for 'linux'
+which is handled differently)
