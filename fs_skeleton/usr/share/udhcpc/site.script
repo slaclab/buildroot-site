@@ -162,9 +162,9 @@ case "$1" in
 		fi
 
 		# save timezone info
-		if [ -n "$posixtzstring" ] ; then
+		if [ -n "$tzstr" ] ; then
 			# no -n! terminating \n is required (man tzfile)
-			echo -e `tr -d '\012' < /etc/localtime.template`"$posixtzstring" > /etc/localtime
+			echo -e `tr -d '\012' < /etc/localtime.template`"$tzstr" > /etc/localtime
 		fi
 
 		mkdir -p /tmp/udhcpd
