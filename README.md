@@ -8,7 +8,7 @@ I like to structure my buildroot tree in the following way:
 
 At the top I like to have a buildroot-version specific directory:
 
-    buildroot-<version>/ e.g.,  buildroot-2019.02/
+    buildroot-<version>/ e.g.,  buildroot-2019.08/
 
 Inside the top directory there are three principal subdirectories:
 
@@ -43,19 +43,19 @@ I do this by unpacking the buildroot source multiple times and renaming
 the top directories after the configuration.
 
 E.g., if I have stable and development versions for x86 (assume version
-2019.02) then I could have
+2019.08) then I could have
 
-    buildroot-2019.02/download/
-    buildroot-2019.02/buildroot-2019.02-x86-devl/
-    buildroot-2019.02/buildroot-2019.02-x86/
+    buildroot-2019.08/download/
+    buildroot-2019.08/buildroot-2019.08-x86-devl/
+    buildroot-2019.08/buildroot-2019.08-x86/
 
 which I obtained doing
 
-    chdir buildroot-2019.02/
-    tar xf ../download/buildroot-2019.02.tar.bz2
-    mv buildroot-2019.02 buildroot-2019.02-x86
-    tar xf ../download/buildroot-2019.02.tar.bz2
-    mv buildroot-2019.02 buildroot-2019.02-x86-devl
+    chdir buildroot-2019.08/
+    tar xf ../download/buildroot-2019.08.tar.bz2
+    mv buildroot-2019.08 buildroot-2019.08-x86
+    tar xf ../download/buildroot-2019.08.tar.bz2
+    mv buildroot-2019.08 buildroot-2019.08-x86-devl
 
 If you only build for the same target architecture then you
 could also omit the `x86`. Nothing about these names is special
@@ -82,8 +82,8 @@ Each build/configuration is connected to a `site-top` by
 means of a symlink. E.g., for the aforementioned stable
 and development builds there could be
 
-    buildroot-2019.02-x86/site       -> ../site-top
-    buildroot-2019.02-x86-devl/site  -> ../site-top-devl
+    buildroot-2019.08-x86/site       -> ../site-top
+    buildroot-2019.08-x86-devl/site  -> ../site-top-devl
 
 ####4. HOST Subdirectory
 
@@ -111,7 +111,7 @@ from the buildroot top instead of issuing `make clean`.
 
 ##INSTALLATION
 
-All the following steps assume version 2019.02. If you are using
+All the following steps assume version 2019.08. If you are using
 a different version, please modify the instructions accordingly.
 
 ###1. Preparation
@@ -121,8 +121,8 @@ structure' above.
 
 Create the TOP directory and chdir there:
 
-    mkdir <prefix>/buildroot-2019.02
-    cd    <prefix>/buildroot-2019.02
+    mkdir <prefix>/buildroot-2019.08
+    cd    <prefix>/buildroot-2019.08
 
 Create `download` directory:
 
@@ -130,15 +130,15 @@ Create `download` directory:
 
 Download buildroot 
 
-    wget -P download/ http://buildroot.uclibc.org/downloads/buildroot-2019.02.tar.bz2
+    wget -P download/ http://buildroot.uclibc.org/downloads/buildroot-2019.08.tar.bz2
 
 Unpack
 
-    tar xf download/buildroot-2019.02.tar.bz2
+    tar xf download/buildroot-2019.08.tar.bz2
 
 You might now want to rename
 
-    mv buildroot-2019.02  buildroot-2019.02-x86_64
+    mv buildroot-2019.08  buildroot-2019.08-x86_64
 
 Repeat the 'unpack' and 'rename' steps if you want to build
 multiple configurations.
@@ -150,11 +150,11 @@ Clone site-top
 NOTE: you need to clone the specific branch matching your buildroot release!
       The `master` branch is empty...
 
-    git clone -b br-2019.02 https://github.com/slaclab/buildroot-site site-top
+    git clone -b br-2019.08 https://github.com/slaclab/buildroot-site site-top
 
 Create symlink to site-specific config files, patches etc.
 
-    ln -s ../site-top buildroot-2019.02-x86_64/site
+    ln -s ../site-top buildroot-2019.08-x86_64/site
 
 ###3. Run SLAC prep helper script
 
@@ -175,7 +175,7 @@ steps that had to be done manually:
 
 First, change the working-directory into the buildroot source directory.
 
-    cd buildroot-2019.02-x86_64/   # or whatever you renamed the directory to
+    cd buildroot-2019.08-x86_64/   # or whatever you renamed the directory to
 
 Note: this directory (i.e., the top-directory of the unpacked buildroot
 distribution) is often referred to as the 'buildroot top directory' in this
