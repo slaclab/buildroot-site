@@ -32,5 +32,8 @@ endif
 ifeq ($(BR2_PACKAGE_LIBEUDEV),y)
 USBIP_DEPENDENCIES += libeudev
 endif
+
+# build breaks with -Werror enabled
+TARGET_CFLAGS += -Wno-stringop-truncation
  
 $(eval $(autotools-package)) 
