@@ -1,8 +1,6 @@
-CLONING SLAC-CONFIGURATION OF BUILDROOT
-=======================================
+#CLONING SLAC-CONFIGURATION OF BUILDROOT
 
-Directory Structure
--------------------
+##Directory Structure
 
 ###TOP Directory
 
@@ -35,15 +33,17 @@ This is the top directory of the unpacked `buildroot` sources.
 Everything that buildroot builds ends up somewhere underneath this directory.
 
 If you unpack the buildroot distribution in the <TOP> directory
-then the unpack procedure creates a 'buildroot-<version>' directory.
+then the unpack procedure creates a `buildroot-<version>` directory.
 
 It should be noted that buildroot does not currently support
 building different configurations (e.g., different targets
-or kernel versions). Therefore you must maintain/build different
-configurations side-by-side. I do this by unpacking the buildroot
-source multiple times and renaming the top directories after
-the configuration. E.g., if I have stable and development
-versions for x86 (assume version 2019.02) then I could have
+or kernel versions) from a single source tree.
+Therefore you must maintain/build different configurations side-by-side.
+I do this by unpacking the buildroot source multiple times and renaming
+the top directories after the configuration.
+
+E.g., if I have stable and development versions for x86 (assume version
+2019.02) then I could have
 
     buildroot-2019.02/download/
     buildroot-2019.02/buildroot-2019.02-x86-devl/
@@ -58,7 +58,7 @@ which I obtained doing
     mv buildroot-2019.02 buildroot-2019.02-x86-devl
 
 If you only build for the same target architecture then you
-could also omit the 'x86'. Nothing about these names is special
+could also omit the `x86`. Nothing about these names is special
 or required.
 
 ####3. SLAC `site` Subdirectory
@@ -78,7 +78,7 @@ clones, e.g. a stable and development one:
 
 ####4. Symlink Connecting Buildroot to Site-Top
 
-Each build/configuration is connected to a 'site-top' by
+Each build/configuration is connected to a `site-top` by
 means of a symlink. E.g., for the aforementioned stable
 and development builds there could be
 
@@ -88,28 +88,28 @@ and development builds there could be
 ####4. HOST Subdirectory
 
 As of 2014.02 the buildroot configuration is set up so that
-the toolchain is installed into the host/ subdirectory.
+the toolchain is installed into the `host/` subdirectory.
 This enables different variants of the same buildroot version
-(e.g., different kernel configs or 'test' variant) to share
+(e.g., different kernel configs or a 'test' variant) to share
 a toolchain. (A config which wishes to share this toolchain
 must in-turn be configured accordingly.)
 
 External software can just use the toolchain in
-    <TOP>/buildroot-<version/host/<host-arch>/<target-arch>/usr/bin/
+
+    <TOP>/buildroot-<version>/host/<host-arch>/<target-arch>/usr/bin/
 
 This structure supports multiple host architectures (since we
 still use 32-bit build machines in some places at slac).
 
-NOTE: if you issue 'make clean' at the buildroot top then
-this will erase everything installed into the 'host' area, too.
+NOTE: if you issue `make clean` at the buildroot top then
+this will erase everything installed into the `host` area, too.
 I usually don't want this to happen and I simply
 
   rm -rf output
 
-from the buildroot top instead of issuing 'make clean'.
+from the buildroot top instead of issuing `make clean`.
 
-INSTALLATION
-------------
+##INSTALLATION
 
 All the following steps assume version 2019.02. If you are using
 a different version, please modify the instructions accordingly.
@@ -124,7 +124,7 @@ Create the TOP directory and chdir there:
     mkdir <prefix>/buildroot-2019.02
     cd    <prefix>/buildroot-2019.02
 
-Create 'download' directory:
+Create `download` directory:
 
     mkdir download
 
@@ -134,9 +134,9 @@ Download buildroot
 
 Unpack
 
-    tar xfj download/buildroot-2019.02.tar.bz2
+    tar xf download/buildroot-2019.02.tar.bz2
 
-You might now want to rename (since the version number is already in TOP)
+You might now want to rename
 
     mv buildroot-2019.02  buildroot-2019.02-x86_64
 
@@ -148,34 +148,38 @@ multiple configurations.
 Clone site-top
 
 NOTE: you need to clone the specific branch matching your buildroot release!
-      The 'master' branch is empty...
+      The `master` branch is empty...
 
     git clone -b br-2019.02 https://github.com/slaclab/buildroot-site site-top
 
 Create symlink to site-specific config files, patches etc.
 
-    ln -s ../site-top buildroot-2019.02-x86_64/site # if you renamed the unpacked buildroot top then use the name here, of course
+    ln -s ../site-top buildroot-2019.02-x86_64/site
 
 ###3. Run SLAC prep helper script
 
 Since 2015.02 a bash script was added which performs several
 steps that had to be done manually:
 
-  - apply buildroot patches (from site/br-patches/)
-    A '.stamp_br_patched' flag-file is created after this step
+  - apply buildroot patches (from `site/br-patches/`)
+    A `.stamp_br_patched` flag-file is created after this step
     so that the script doesn't attempt to apply patches twice.
   - Compile the buildroot config file from snippets (arch-specific
-    and common/generic pieces) under site/config/.
+    and common/generic pieces) under `site/config/`.
   - Convert the buildroot config file (which really is a 'defconfig',
     i.e., a list of settings that deviate from the defaults) to a
-    full-blown config file (.config).
+    full-blown config file (`.config`).
   - Compile the linux kernel defconfig file from arch-specific and
-    common/generic pieces under site/config/ to 'linux-<version>.config'.
-    This is a 'defconfig'.
+    common/generic pieces under `site/config/` to `linux-<version>.config`.
+    (This is a 'defconfig'.)
 
 First, change the working-directory into the buildroot source directory.
 
     cd buildroot-2019.02-x86_64/   # or whatever you renamed the directory to
+
+Note: this directory (i.e., the top-directory of the unpacked buildroot
+distribution) is often referred to as the 'buildroot top directory' in this
+text.
 
 Then execute
 
@@ -187,11 +191,13 @@ were <arch> is one of:
   - x86_64
   - nanopi
 
-Upon successful completion the script will install a '.stamp_br_installconf'
+Upon successful completion the script will install a `.stamp_br_installconf`
 flag-file which will prevent the script from executing again (can be
-overridden with a '-f' option).
+overridden with a `-f` option).
 
 Script options:
+
+````
     -h: help
     -f: force    -- recompile config files 
     -p: no-patch -- do not apply buildroot patches (handy if you want to
@@ -199,31 +205,31 @@ Script options:
                     different arch) but patches had been applied already.
     -d: dry-run  -- show what script would do (some steps are retraced,
                     i.e., files are restored).
+````
 
 ###4. Build
 
-Make sure CWD is neither in PATH nor in LD_LIBRARY_PATH and issue
+Make sure your CWD is neither in `PATH` nor in `LD_LIBRARY_PATH` and issue
 
     make
 
 NOTE: if your main build machine has no access to the internet then
-      you can use the following steps (after copying the buildroot
-      config file):
+      you can use the following steps:
 
          1. log onto a machine *with* internet access.
          2. chdir to buildroot top (where buildroot .config file sits)
-         3. type 'make source' (this just downloads everything needed)
+         3. type `make source` (this just downloads everything needed)
          4. log out, back into your build machine
-         5. type 'make'
+         5. type `make`
 
 ####4.1. Output Products
 
 Products generated by the build (kernel image, root-file system etc.)
-are in output/images/.
+are in `output/images/`.
 
 ###5. Modifying the Configuration Files
 
-This process is explained in a separate README.buildroot.modify_config
+This process is explained in a separate `README.buildroot.modify_config`
 file.
 
 ###6. Version Control
@@ -232,9 +238,9 @@ file.
   - buildroot config file
   - linux kernel config file
   - busybox config file
-as well as the output of 'git describe --dirty site/' which captures
+as well as the output of `(cd site; git describe --always --dirty)` which captures
 the state of the slac-specific configuration(s) are stored in the
-target's rootfs under
+target's root filesystem under
 
     /etc/site/
 
