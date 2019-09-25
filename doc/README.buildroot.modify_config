@@ -50,9 +50,9 @@ Modifying kernel, busybox, or buildroot configuration:
                diff -c a b
 
     These diffs must then be manually copied into the 
-        site/config/br-<version>-<arch>.config
+        site/br2-external/configs/br-<version>-<arch>.config
     and
-        site/config/br-<version>-common.config
+        site/br2-external/configs/br-<version>-common.config
     depending on whether the setting applies to all architectures
     or a specific one only.
 
