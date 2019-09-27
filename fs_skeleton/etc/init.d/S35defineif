@@ -11,9 +11,22 @@
 
 case "$1" in
 	start)
+		# pxelinux supports BOOTIF
+		if [ -n "$BOOTIF" -a -z "$BOOTIF_MAC" ] ; then
+			BOOTIF_MAC="$BOOTIF"
+		fi
+
+		# convert '-' -> ':' and also to uppercase
+		BOOTIF_MAC=`echo -n "$BOOTIF_MAC" | tr 'abcdef-' 'ABCDEF:'`
+
+		# pxelinux' BOOTIF has ARP type (01) prepended
+		BOOTIF_MAC=`echo -n "$BOOTIF_MAC" | sed -e 's/\(\([^:]\+[:]\)*\)\([^:]\+\([:][^:]\+\)\{5\}\)/\3/'`
+
+		export BOOTIF_MAC
 
 		if [ -n "$BOOTIF_MAC" ] && ! grep -q BOOTIF_MAC /etc/network/interfaces ; then
-			ifconfig -a | awk '/HWaddr[ ]*'`echo -n $BOOTIF_MAC | tr abcdef ABCDEF`'/{printf("#BOOTIF_MAC %s\nauto %s\niface %s inet dhcp\n", ENVIRON["BOOTIF_MAC"], $1, $1)}' >> /etc/network/interfaces
+			ifconfig -a | awk '/HWaddr[ ]*'"$BOOTIF_MAC"'/{printf("#BOOTIF_MAC %s\nauto %s\niface %s inet dhcp\n", ENVIRON["BOOTIF_MAC"], $1, $1)}' >> /etc/network/interfaces
+			cat /etc/network/interfaces
 			if [ -n "$ROOTPATH" ] ; then
 				echo "  ROOTPATH $ROOTPATH" >> /etc/network/interfaces
 			fi
