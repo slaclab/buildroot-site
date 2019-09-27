@@ -6,11 +6,14 @@
 
 case "$1" in
 	start)
-        if [ -f /etc/modules ] ; then
-          for mod in `grep -v '^[ \t]*[#]' /etc/modules`; do
-            modprobe $mod
-          done
-        fi
+		# Make sure database is up to date
+		depmod -a
+		echo "Probing for modules"
+		if [ -f /etc/modules ] ; then
+			for mod in `grep -v '^[ \t]*[#]' /etc/modules`; do
+				modprobe $mod
+			done
+		fi
 		. /etc/init.d/loadmods.sh
 	;;
 
