@@ -36,6 +36,6 @@ USBIP_DEPENDENCIES += libeudev
 endif
 
 # build breaks with -Werror enabled
-TARGET_CFLAGS += -Wno-stringop-truncation
+TARGET_CFLAGS += -Wno-stringop-truncation -Wno-format-truncation
  
 $(eval $(autotools-package)) 
