@@ -1,0 +1,3 @@
+TS, 20221205
+Apparently the issue with lost interrupts in this driver is
+fixed in 5.15.79 (see comments at lines 1642, 1658)
