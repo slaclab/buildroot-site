@@ -1,0 +1,19 @@
+*** linux-4.14.139/kernel/irq/manage.c.orig	2023-09-15 10:07:12.784438497 -0700
+--- linux-4.14.139/kernel/irq/manage.c	2023-09-15 10:22:01.412762000 -0700
+***************
+*** 353,359 ****
+  
+  	if (old_notify) {
+  #ifdef CONFIG_PREEMPT_RT_BASE
+! 		kthread_cancel_work_sync(&notify->work);
+  #else
+  		cancel_work_sync(&old_notify->work);
+  #endif
+--- 353,359 ----
+  
+  	if (old_notify) {
+  #ifdef CONFIG_PREEMPT_RT_BASE
+! 		kthread_cancel_work_sync(&old_notify->work);
+  #else
+  		cancel_work_sync(&old_notify->work);
+  #endif
