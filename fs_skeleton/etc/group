@@ -18,4 +18,6 @@ nobody:x:99:
 nogroup:x:99:
 users:x:100:
 lcls:x:2211:
+facet:x:2376:
+acctest:x:2459:
 qb:x:1080:
