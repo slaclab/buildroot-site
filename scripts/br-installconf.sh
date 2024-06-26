@@ -153,7 +153,7 @@ if [ "$LCONF"x != "yx" ] ; then
 			touch .stamp_br_patched
 		fi
 	else
-		if cat site/br-patches/buildroot* | patch ${DRY_RUN} --posix --verbose -p0 -b ; then
+		if cat site/br-patches/buildroot* | patch ${DRY_RUN} --posix --verbose -p0 -N -b ; then
 			if [ -z "${DRY_RUN}" ] ; then
 				touch .stamp_br_patched
 			fi
