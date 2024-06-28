@@ -161,7 +161,7 @@ if [ "$LCONF"x != "yx" ] ; then
 	fi
 fi
 
-BR_VER=`make print-version`
+BR_VER=`make print-version | sed 's/-dirty//g'`
 if [ $? != 0 ]; then
 	echo "Error: unable to determine buildroot version" >&2
 	exit 1
