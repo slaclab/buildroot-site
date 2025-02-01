@@ -5,7 +5,7 @@ sys:x:3:
 adm:x:4:
 tty:x:5:
 disk:x:6:
-pci:x:7:laci,spear
+pci:x:7:laci,spear,flaci,acctf
 wheel:x:10:root
 audio:x:29:
 utmp:x:43:
@@ -21,4 +21,4 @@ lcls:x:2211:
 facet:x:2376:
 acctest:x:2459:
 qb:x:1080:
-epicsioc:x:4297:
+epicsioc:x:4297:laci
