@@ -1,2 +1,1 @@
 source "$BR2_EXTERNAL_SITE_SLAC_PATH/packages/libeudev/Config.in"
-source "$BR2_EXTERNAL_SITE_SLAC_PATH/packages/usbip/Config.in"
