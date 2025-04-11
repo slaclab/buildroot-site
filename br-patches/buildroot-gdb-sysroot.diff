@@ -1,12 +1,10 @@
-*** package/gdb/gdb.mk.orig	2014-09-01 04:20:56.000000000 -0700
---- package/gdb/gdb.mk	2014-09-15 09:54:22.000000000 -0700
-***************
-*** 119,124 ****
---- 119,125 ----
-  	--without-x \
-  	--enable-threads \
-  	--disable-werror \
-+ 	--with-sysroot=$(TARGET_DIR)/ \
-  	--without-included-gettext \
-  	$(GDB_DISABLE_BINUTILS_CONF_OPT) \
-  	--disable-sim
+--- package/gdb/gdb.mk.orig	2025-04-11 12:37:34.554892900 -0700
++++ package/gdb/gdb.mk	2025-04-11 12:39:10.650117442 -0700
+@@ -127,6 +127,7 @@
+ 	--disable-sim \
+ 	$(GDB_DISABLE_BINUTILS_CONF_OPTS) \
+ 	--without-included-gettext \
++	--with-sysroot=$(TARGET_DIR)/ \
+ 	--disable-werror \
+ 	--enable-static \
+ 	--disable-shared \

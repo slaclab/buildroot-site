@@ -1,22 +1,18 @@
-*** package/e2fsprogs/e2fsprogs.mk.orig	2019-09-01 14:06:01.000000000 -0700
---- package/e2fsprogs/e2fsprogs.mk	2019-09-24 16:52:05.447145886 -0700
-***************
-*** 27,32 ****
---- 27,33 ----
-  	--disable-libblkid \
-  	--disable-libuuid \
-  	--disable-testio-debug \
-+ 	--enable-symlink-build \
-  	--enable-symlink-install \
-  	--enable-elf-shlibs \
-  	--with-crond-dir=no
-***************
-*** 48,53 ****
---- 49,55 ----
-  	--disable-e2initrd-helper \
-  	--disable-testio-debug \
-  	--disable-rpath \
-+ 	--enable-symlink-build \
-  	--enable-symlink-install
-  
-  ifeq ($(BR2_PACKAGE_E2FSPROGS_FUSE2FS),y)
+--- package/e2fsprogs/e2fsprogs.mk.orig	2025-04-11 12:44:08.590965193 -0700
++++ package/e2fsprogs/e2fsprogs.mk	2025-04-11 12:44:53.898008243 -0700
+@@ -31,6 +31,7 @@
+ 	--disable-libblkid \
+ 	--disable-libuuid \
+ 	--disable-testio-debug \
++	--enable-symlink-build \
+ 	--enable-symlink-install \
+ 	--enable-elf-shlibs \
+ 	--with-crond-dir=no \
+@@ -54,6 +55,7 @@
+ 	--disable-e2initrd-helper \
+ 	--disable-testio-debug \
+ 	--disable-rpath \
++	--enable-symlink-build \
+ 	--enable-symlink-install
+ 
+ ifeq ($(BR2_PACKAGE_E2FSPROGS_FUSE2FS),y)
