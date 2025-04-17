@@ -1,20 +1,17 @@
-*** toolchain/helpers.mk.orig	2017-09-06 16:07:54.073202237 -0700
---- toolchain/helpers.mk	2017-09-06 17:10:37.140600002 -0700
-***************
-*** 20,26 ****
-  			if test -h $${LIBPATH} ; then \
-  				cp -d $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
-  				LIBPATH="`readlink -f $${LIBPATH}`"; \
-! 			elif test -f $${LIBPATH}; then \
-  				$(INSTALL) -D -m0755 $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
-  				break ; \
-  			else \
---- 20,27 ----
-  			if test -h $${LIBPATH} ; then \
-  				cp -d $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
-  				LIBPATH="`readlink -f $${LIBPATH}`"; \
-! 			fi; \
-! 			if test -f $${LIBPATH}; then \
-  				$(INSTALL) -D -m0755 $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
-  				break ; \
-  			else \
+--- toolchain/helpers.mk.orig	2025-04-16 18:12:18.548264382 -0700
++++ toolchain/helpers.mk	2025-04-16 18:36:09.789245115 -0700
+@@ -25,10 +25,12 @@
+ 					echo "LIBPATH empty after trying to resolve symlink $${OLD_LIBPATH}" 1>&2; \
+ 					exit 1; \
+ 				fi; \
+-			elif test -f $${LIBPATH}; then \
++			fi; \
++			if test -f $${LIBPATH}; then \
+ 				$(INSTALL) -D -m0755 $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
+ 				break ; \
+-			else \
++			fi;
++			if [ ! -h $${LIBPATH} ] && [ ! -f $${LIBPATH} ]; \
+ 				exit -1; \
+ 			fi; \
+ 		done; \
