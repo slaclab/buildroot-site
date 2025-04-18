@@ -174,6 +174,8 @@ if [ "$LCONF"x != "yx" ] ; then
 	if [ -f ${CONF_DIR}/.config ] ; then
 		mv ${CONF_DIR}/.config ${CONF_DIR}/.config.bup
 	fi
+    rm -f site/br2-external/configs/${ARCH}_defconfig
+    cat site/br2-external/configs/br-common.config site/br2-external/configs/br-${ARCH}.config | sort -b -t= -k1,1 -u -s > site/br2-external/configs/${ARCH}_defconfig
 	make BR2_EXTERNAL=site/br2-external ${ARCH}_defconfig
 	if [ $? != 0 ] ; then
 		echo "Error: unable to install .config file" >&2
