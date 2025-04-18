@@ -10,8 +10,8 @@
  				$(INSTALL) -D -m0755 $${LIBPATH} $(TARGET_DIR)/$${DESTDIR}/$${LIBNAME}; \
  				break ; \
 -			else \
-+			fi;
-+			if [ ! -h $${LIBPATH} ] && [ ! -f $${LIBPATH} ]; \
++			fi; \
++			if [ ! -h $${LIBPATH} ] && [ ! -f $${LIBPATH} ]; then \
  				exit -1; \
  			fi; \
  		done; \
