@@ -1,0 +1,45 @@
+*** linux-4.14.139/drivers/net/ethernet/cadence/macb_main.c.orig	2022-03-10 09:26:26.322883546 +0100
+--- linux-4.14.139/drivers/net/ethernet/cadence/macb_main.c	2022-03-15 10:56:25.479576213 +0100
+***************
+*** 1224,1229 ****
+--- 1224,1230 ----
+  {
+  	struct macb *bp = container_of(napi, struct macb, napi);
+  	int work_done;
++     unsigned long flags;
+  	u32 status;
+  
+  	status = macb_readl(bp, RSR);
+***************
+*** 1239,1251 ****
+  		napi_complete_done(napi, work_done);
+  
+  		/* Packets received while interrupts were disabled */
+  		status = macb_readl(bp, RSR);
+  		if (status) {
+  			if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+  				macb_writel(bp, ISR, MACB_BIT(RCOMP));
+  			napi_reschedule(napi);
+  		} else {
+! 			macb_writel(bp, IER, MACB_RX_INT_FLAGS);
+  		}
+  	}
+  
+--- 1240,1256 ----
+  		napi_complete_done(napi, work_done);
+  
+  		/* Packets received while interrupts were disabled */
++ 		spin_lock_irqsave(&bp->lock, flags);
++ 		macb_writel(bp, IER, MACB_RX_INT_FLAGS);
+  		status = macb_readl(bp, RSR);
+  		if (status) {
+  			if (bp->caps & MACB_CAPS_ISR_CLEAR_ON_WRITE)
+  				macb_writel(bp, ISR, MACB_BIT(RCOMP));
++ 		    macb_writel(bp, IDR, MACB_RX_INT_FLAGS);
++ 		    spin_unlock_irqrestore(&bp->lock, flags);
+  			napi_reschedule(napi);
+  		} else {
+! 		    spin_unlock_irqrestore(&bp->lock, flags);
+  		}
+  	}
+  
