@@ -1,11 +1,19 @@
---- busybox-1.31.0/init/init.c.orig	2024-11-08 18:01:42.525802953 -0800
-+++ busybox-1.31.0/init/init.c	2024-11-08 18:02:27.896813131 -0800
-@@ -1074,6 +1074,27 @@
- 		sigaction(SIGBUS, &sa, NULL);
+ - add '-r' option to 'ulimit'
+ - modify 'init' so that all processes have unlimited hard limits
+   for rtprio, memlock, coredump -- however, the corresponding soft
+   limits are still low/zero.
+T.S, 2012/3/30
+M. Donadio, 2025/04/25 - Updated for Busybox 1.37.0. Kept Jeremy Lorelli's
+suggestion to apply this patch to init_main so we can have subprocesses
+using the right limits.
+--- busybox-1.37.0/init/init.c.orig	2025-04-25 19:32:30.768209669 -0700
++++ busybox-1.37.0/init/init.c	2025-04-25 19:37:31.609100704 -0700
+@@ -1073,6 +1073,27 @@
+ 	if (argv[1] && strcmp(argv[1], "-q") == 0) {
+ 		return kill(1, SIGHUP);
  	}
- #endif
 +	
-+    /* Set some hard limits to 'infinity' (for everyone to inherit).
++        /* Set some hard limits to 'infinity' (for everyone to inherit).
 +	 * We want real-time related stuff to be used by everyone (but
 +	 * not enabled unless soft-limit is increased from the shell).
 +	 * We also set coredump hard-limit here so coredumps may be
@@ -26,5 +34,5 @@
 +		setrlimit( RLIMIT_CORE,   &limit );
 +	}
  
- 	if (!DEBUG_INIT) {
- 		/* Some users send poweroff signals to init VERY early.
+ #if !DEBUG_INIT
+ 	/* Expect to be invoked as init with PID=1 or be invoked as linuxrc */
