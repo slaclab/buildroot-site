@@ -1,0 +1,17 @@
+Perf won't build and compile message requested to run make with NO_JEVENTS=1.
+Searching around I found that the Yocto project faced the same problem and used
+this configuration as default.
+M. Donadio - 2025/04/25
+
+--- package/linux-tools/linux-tool-perf.mk.in.orig	2025-04-25 16:27:09.151523148 -0700
++++ package/linux-tools/linux-tool-perf.mk.in	2025-04-25 16:28:49.361876115 -0700
+@@ -29,7 +29,8 @@
+ 	NO_LIBPYTHON=1 \
+ 	NO_LIBBIONIC=1 \
+ 	NO_LIBTRACEEVENT=1 \
+-	NO_SHELLCHECK=1
++	NO_SHELLCHECK=1 \
++	NO_JEVENTS=1
+ 
+ # We need to pass an argument to ld for setting the emulation when
+ # building for MIPS architecture, otherwise the default one will always
