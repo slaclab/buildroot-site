@@ -1,1 +1,2 @@
-source "$BR2_EXTERNAL_SITE_SLAC_PATH/packages/libeudev/Config.in"
+# Template for new packages
+# source "$BR2_EXTERNAL_SITE_SLAC_PATH/packages/<package name>/Config.in"
