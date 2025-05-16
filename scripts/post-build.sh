@@ -72,7 +72,13 @@ if [ $? != 0 ] ; then exit 1 ; fi
 
 cpNzip ${BUILD_DIR}/busybox-${BB_VER}/.config "busybox-${BB_VER}"
 
-(cd site; git describe --always --dirty) > ${V_DIR}/site-gitdescription.txt
+cd site
+# This is needed when running in Docker with bound directory for /build/buildroot
+if [ git config --list | grep $PWD | wc -l == 0 ]; then
+	git config --global --add safe.directory $PWD
+fi
+
+(git describe --always --dirty) > ${V_DIR}/site-gitdescription.txt
 if [ $? != 0 ] ; then
 	echo "Unable to obtain git description of 'site/'" >&2
 	exit 1
