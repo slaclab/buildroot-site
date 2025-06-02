@@ -73,9 +73,16 @@ if [ $? != 0 ] ; then exit 1 ; fi
 cpNzip ${BUILD_DIR}/busybox-${BB_VER}/.config "busybox-${BB_VER}"
 
 cd site
-# This is needed when running in Docker with bound directory for /build/buildroot
-if [ git config --list | grep $PWD | wc -l == 0 ]; then
-	git config --global --add safe.directory $PWD
+# Adding the repository to Git safe.directory is needed when running in Docker
+# with bound directory for /build/buildroot.
+site_dir=$PWD
+if [[ -L "$site_dir" ]]; then
+        # Extract the directory name of the symlink to the actual path
+        site_dir=$(readlink -f "$site_dir")
+fi
+GIT_GLOBAL=$(git config --list | grep $site_dir | wc -l)
+if [ $GIT_GLOBAL -eq 0 ]; then
+        git config --global --add safe.directory $site_dir
 fi
 
 (git describe --always --dirty) > ${V_DIR}/site-gitdescription.txt
