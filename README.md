@@ -1,5 +1,11 @@
 # CLONING SLAC-CONFIGURATION OF BUILDROOT
 
+## Warning about architectures in this release
+
+This release was used to build only for x86_64 architectures. There's no
+guarantee that it will build or work for other archs. This is still a work
+in progress.
+
 ## Available container for automating the steps below
 
 Since 2025, there's a Docker container plus useful scripts that automate all

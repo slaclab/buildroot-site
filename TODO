@@ -2,3 +2,6 @@
   - should rework udhcp's 'site.script':
     our modifications should go into a snippet
     under default.script.d/
+
+2025/06/03 (MD):
+  - Build 2025.02 for architectures other than x86_64.
