@@ -40,4 +40,15 @@ These are config customizations that affect all architectures. You may need to c
 - For the URL with the RT_PREEMPT patch, go to the [Linux Foundation website](https://wiki.linuxfoundation.org/realtime/preempt_rt_versions) and search for the URL corresponding to your kernel version. Kernel version and PREEMPT_RT patch versions must match for all 3 numbers of the version. Add this URL to the parameter `BR2_LINUX_KERNEL_PATCH`. Keep the syntax of the parameter because it has more things than the URL.
     - Starting from kernel 6.12, the PREEMPT_RT patch was fully integrated and is now part of the official kernel mainline. The team that maintained the PREEMPT_RT patch is still providing patches with additional features not added to the mainline. We decided to keep using their patches to benefit from all features.
 - Go back to the untared Buildroot directory and open the file `package/busybox/busybox.mk`. Take note of the parameter `BUSYBOX_VERSION`. On the present repository (buildroot-site) change the parameter `BR2_PACKAGE_BUSYBOX_CONFIG` in `br2-external/configs/br-common.config`. Note that this will be the filename that you will need to change later, using the Busybox version as part of the name.
-- Later on, when you are building an image, Buildroot may complain that the image file is greater than the space configured for it. If this is the case, you will need to change the parameter `BR2_TARGET_ROOTFS_EXT2_SIZE`.
+- Later on, when you are building an image, Buildroot may complain that the image file is greater than the space configured for it. If this is the case, you will need to change the parameter `BR2_TARGET_ROOTFS_EXT2_SIZE`
+
+## config directory
+This directory holds config files for packages, with parameters that we want to be different from the default used by Buildroot. The difference from the directory `br2-external/configs` is that the former configures Buildroot itself and the latter configures individual packages.
+
+For the linux kernel, there are 4 separate files that will be managed by the script `scripts/br-installconf.sh`, which will produce a final linux-<kernel version>.config file. This is the real config file used when building the Kernel.
+
+Get the kernel version of the previous Buildroot used by SLAC. For example, for Buildroot 2025, the kernel version is 6.12.19. Copy all 4 files called `linux-<kernel version>-*.config`, renaming them with the kernel version you are working on. These are configuration files applied when building the Linux kernel. You won't probably need to modify these files.
+
+Besides the Linux kernel, the other package currently available in this directory is BusyBox (file bb-<version>.x.config). Now it is time to use the `BR2_PACKAGE_BUSYBOX_CONFIG` parameter that you modified in the previous section. Rename the BusyBox config file to be identical to what you set in it. This file is used directly by Buildroot when building BusyBox and is not touched by the script `scripts/br-installconf.sh`. You probably won't need to modify this file.
+
+## pkg-patches
