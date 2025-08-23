@@ -34,10 +34,10 @@ We will detail br-common.config on the next section. The architecture specific c
 
 #### br-common.config
 These are config customizations that affect all architectures. You may need to change it several times while iterating through Buildroot several times. `README.buildroot.modify_config` explains the process of using menuconfig to help with editing this file, but as a first start, you can manually edit these parameters:
-- Go to the root of the Buildroot files that you untared earlier. Use `make menuconfig` to open the GUI. Go to the option `Kernel`. Select `Linux Kernel` and let it use the `Latest version` option. Exit, to make it create a .config file.
-- Grep the .config file for the following parameters: BR2_LINUX_KERNEL_VERSION.
-- Copy it to the file `br2-external/configs/br-common.config`.
+- Go to the root of the Buildroot files that you untared earlier. Open the file linux/linux.hash and take note of the newest kernel supported by Buildroot.
+- Copy the version number to the parameter `BR2_LINUX_KERNEL_VERSION` in the file `br2-external/configs/br-common.config`.
 - In the file above, change the parameter `BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_12=y` to reflect the kernel version. For example, if the kernel version is 7.10.3, replace 6_12 with 7_10.
-- For the URL with the RT_PREEMPT patch, go to the [Linux Foundation website](https://wiki.linuxfoundation.org/realtime/preempt_rt_versions) and search for the URL corresponding to your kernel version. Add this URL to the parameter `BR2_LINUX_KERNEL_PATCH`. Keep the syntax of the parameter because it has more things than the URL.
+- For the URL with the RT_PREEMPT patch, go to the [Linux Foundation website](https://wiki.linuxfoundation.org/realtime/preempt_rt_versions) and search for the URL corresponding to your kernel version. Kernel version and PREEMPT_RT patch versions must match for all 3 numbers of the version. Add this URL to the parameter `BR2_LINUX_KERNEL_PATCH`. Keep the syntax of the parameter because it has more things than the URL.
+    - Starting from kernel 6.12, the PREEMPT_RT patch was fully integrated and is now part of the official kernel mainline. The team that maintained the PREEMPT_RT patch is still providing patches with additional features not added to the mainline. We decided to keep using their patches to benefit from all features.
 - Go back to the untared Buildroot directory and open the file `package/busybox/busybox.mk`. Take note of the parameter `BUSYBOX_VERSION`. On the present repository (buildroot-site) change the parameter `BR2_PACKAGE_BUSYBOX_CONFIG` in `br2-external/configs/br-common.config`. Note that this will be the filename that you will need to change later, using the Busybox version as part of the name.
 - Later on, when you are building an image, Buildroot may complain that the image file is greater than the space configured for it. If this is the case, you will need to change the parameter `BR2_TARGET_ROOTFS_EXT2_SIZE`.
