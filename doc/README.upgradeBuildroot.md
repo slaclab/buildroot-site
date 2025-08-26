@@ -7,8 +7,10 @@ If you need a basis to estimate how much time you need to bring a new version of
 - Configure and Build ATCA-related packages, including EPICS base: 42 hours
 - Configure and build all ATCA-related modules: 
 
-## First step
+## First steps
 Download and untar the new Buildroot. It will be used by the files in this repository.
+
+Start from the most recent branch of the present repository and create a new branch following the same naming convention: br-\<Buildroot version\>, replacing \<Buildroot version\> with the version number of the new Buildroot. As this is a new development made on top of the previous one, there's no need for pull requests until the first release is ready.
 
 Below there is a description of where to make changes in this repository so the new untared Buildroot can be used.
 
@@ -52,3 +54,44 @@ Get the kernel version of the previous Buildroot used by SLAC. For example, for 
 Besides the Linux kernel, the other package currently available in this directory is BusyBox (file bb-<version>.x.config). Now it is time to use the `BR2_PACKAGE_BUSYBOX_CONFIG` parameter that you modified in the previous section. Rename the BusyBox config file to be identical to what you set in it. This file is used directly by Buildroot when building BusyBox and is not touched by the script `scripts/br-installconf.sh`. You probably won't need to modify this file.
 
 ## pkg-patches
+The idea to deal with the patches here is the same of what was done previously on the `br-patches` directory. The difference is that instead, of patching Buildroot itself, the patches will be applied to packages that are built and installed by Buildroot.
+
+First thing, read the file `README.suffix` in this directory to understand the required file name format. The contents of the `linux` sub-directory is the only one used by the script·`scripts/br-installconf.sh`. All other directories are used directly by Buildroot, whithout the intervention of the script.
+
+Start with the `pkg-patches/linux` directory. Create a new sub-directory naming it with the kernel version you are working with. Copy all files from the sub-directory from the previous kernel version to the newly created one and rename them to reflect the new kernel version. Until Buildroot 2019 the diff file regarding the zynq architecture didn't brake the build, but with Buildroot 2025 this file had to be renamed so `scripts/br-installconf.sh` ignored it because this file was breaking the build for the x86 architecture. At the present date (September 2025), we didn't build LinuxRT for architectures other than x86, so a solution for zynq is still pending.
+
+These patches are applied to packages downloaded by Buildroot, which don't exist at this point. So, to update the patches, you'll need to run the Buildroot machinery for the first time. At this point, you've already downloaded and untared Buildroot. Follow the instructions on [README - Installation section](https://github.com/slaclab/buildroot-site/blob/br-2025.02/README.md#installation) to create the soft link `site-top` pointing to where you downloaded Buildroot and also to see instructions on how to run the script `br-installconf.sh`. Alternatively you can use the [SLAC Buildroot Docker](https://github.com/slaclab/slac-buildroot-docker/) mentioned in the README, but you will need to modify the scripts so they download your version of Buildroot. The present repository is added as a submodule of the SLAC Buildroot Docker, so make sure to update it with the branch you started in the section `First steps`. Also, when running the next steps, it is better to use the script `start-dev-container.sh` instead of `create-container.sh` because the former allows you to connect to the container and work with the build process step-by-step. Although it needs a little preparation, we believe that the Docker method is easier because it already automates some of the things.
+
+After running `br-installconf.sh`, you'll need to run `make` in the Buildroot directory. Buildroot will download the packages and start to build them. It is expected that the build will break once it tries to apply the old patches into the new files. Now you have the files that you need to update the patches. Use the same method described in the `br-patches directory` section for the package that broke the build. The only difference here is to run the `diff` command while in the `output/build` directory inside the Buildroot directory that you've untared earlier. Also, see that the name of the patch file will start with the package name instead of "buildroot". The name doesn't affect the building process, but helps other people that will maintain this repository.
+
+Run `make` again. Hopefully your new patch will pass correctly and the build will break in the next package. Repeat the process until you have a clean build.
+
+## Obtaining the build products
+If you are using SLAC Buildroot Docker, follow the instructions on its repository README to get both the image and the toolchain.
+
+For the manual process:
+- Image: on the Buildroot directory, the files for the image will be on `output/images`.
+- Toolchain: on the Buildroot directory, the files will be on `output/host`. At SLAC, we just copy the entire `host` directory to our release area.
+
+## Testing
+To test the images and toolchain at SLAC, you need to place them at specific directories so you can build packages, EPICS modules, and IOCs and boot the image on the CPUs.
+
+### Image
+Create a directory in `$TFTPBOOT/linuxRT/boot/` choosing a name that reflects the Buildroot version, the architecture, and that this image is still under test. Copy the files `bzImage`, `rootfs.ext2`, and `rootfs.ext2.gz` created by Buildroot in this directory.
+
+For the CPU that will boot the image, modify the file `$TFTPBOOT/linuxRT/boot/ipxe/<CPU name>.ipxe`, commenting out the line starting with `set vers` and adding your own `set vers` for the directory that you created above. It is important to preserv the previous line in case you need to reboot the CPU with the previous image.
+
+Just reboot the CPU and check if the new Buildroot is running with `cat /etc/os-release`. It's now ready for testing.
+
+### Toolchain
+Create a new directory in `$PACKAGE_SITE_TOP/linuxRT/` following the convention `buildroot-<Buildroot version>`. For example, `buildroot-2025.02`. The name convention is important because scripts and makefiles are all set with the assumption that it will follow this format.
+
+Copy the entire host directory described above to this new directory. An example of how the final result will look like is `buildroot-2025.02/host/`. This is already the official release and won't change unless, of course, something doesn't work and you need to rebuild the toolchain with Buildroot. But this is very unlikely to happen.
+
+### Building software for tests
+We recommend that you build in a local area all the required software for the IOC that will be used for testing. This will give you the freedom to select the versions of each piece of software that you want and your local changes won't require that you formally release them while testing. You will need to modify each piece of software to point to the new toolchain and, also, to your local area when one piece depends on another.
+
+When your tests are finished and your are confident that you can create a release for everything, you can just use `git diff` to see what changed and start the process of pull requests and official release piece by piece in the correct dependency order.
+
+## Final release
+The script `scripts/post-build.sh` use the information of the git tag to configure strings in the image. If no tag is present, it assigns a `dirty` tag, which is not what we want. Once everything was tested and proved to work, it is time to tag the final git commit, submit the tag to GitHub and recreate the image. This last image is the one that will be placed in `$TFTPBOOT/linuxRT/boot/` with an official directory name, following the naming convention `buildroot-<Buildroot version>-<SLAC release>-<Arch>`. The SLAC release is just an incremental number with 1 digit, starting from 1 (not zero). Arch can be, for example, x86_64 and i686. An example of a valid name is `buildroot-2025.02-1-x86_64`.
