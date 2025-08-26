@@ -3,9 +3,9 @@
 ## Expected development time
 
 If you need a basis to estimate how much time you need to bring a new version of Buildroot:
-- Patch, configure, build Buildroot: 86 hours
-- Configure and Build ATCA-related packages, including EPICS base: 42 hours
-- Configure and build all ATCA-related modules: 
+- Patch, configure, build Buildroot: 85 hours
+- Configure and Build ATCA-related packages, including EPICS base: 50 hours
+- Configure and build all ATCA-related modules: 40 hours
 
 ## First steps
 Download and untar the new Buildroot. It will be used by the files in this repository.
