@@ -14,8 +14,8 @@ case "$1" in
 			# Continue here and let then also specify a BOOTFILE
 		fi
 		# New path: Parse the boot file out of the kernel parameters
-		if `cat /proc/cmdline | grep -q 'CMDLINE='`; then
-			BOOTFILE=`cat /proc/cmdline | grep -Eo 'CMDLINE=\S+' | cut -d '=' -f2`
+		if `grep -q 'CMDLINE=' /proc/cmdline`; then
+			BOOTFILE=`cat /proc/cmdline | grep -Eo 'CMDLINE=\S+' | cut -d '=' -f2-`
 		fi
 		# Legacy path: Parse boot file out of /etc/bootfile, supplied by DHCP only.
 		if [ -z "$BOOTFILE" -a -r /etc/bootfile ] ; then

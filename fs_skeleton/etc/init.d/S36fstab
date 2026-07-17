@@ -14,8 +14,8 @@
 case "$1" in
     start)
         MO=`cat /proc/cmdline | grep -Eo 'ROOTOPTS=\S+' | sed 's/ROOTOPTS=//g'`
-        FT=`cat /proc/cmdline | grep -Eo 'ROOTTYPE=\S+' | cut -d '=' -f2`
-        ROOTMNT=`cat /proc/cmdline | grep -Eo 'ROOTMNT=\S+' | cut -d '=' -f2`
+        FT=`cat /proc/cmdline | grep -Eo 'ROOTTYPE=\S+' | cut -d '=' -f2-`
+        ROOTMNT=`cat /proc/cmdline | grep -Eo 'ROOTMNT=\S+' | cut -d '=' -f2-`
 
         if [ -z "${ROOTMNT}" ]; then
             echo "No ROOTMNT= in /proc/cmdline; falling back to DHCP"
@@ -24,11 +24,12 @@ case "$1" in
 
         [ -z "${FT}" ] && FT=nfs
 
-        # Append NFS specific options
+        # Append NFSv4-specific defaults
         case "${FT}" in
-            nfs|nfs4)
-                [ ! -z "${MO}" ] && MO="${MO},"
-                MO="${MO}ro,nolock,noresvport,noac,soft"
+            nfs|nfs4|nfs4.1)
+                if [ -z "${MO}" ]; then
+                    MO="ro,nolock,noresvport,noac,soft"
+                fi
                 ;;
             *)
                 ;;
