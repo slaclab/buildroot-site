@@ -28,7 +28,7 @@ case "$1" in
         case "${FT}" in
             nfs|nfs4|nfs4.1)
                 if [ -z "${MO}" ]; then
-                    MO="ro,nolock,noresvport,noac,soft"
+                    MO="ro,nolock,noresvport,hard,noatime"
                 fi
                 ;;
             *)
