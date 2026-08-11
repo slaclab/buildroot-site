@@ -1,0 +1,13 @@
+--- linux-4.14.139/fs/nfs/super.c.orig	2026-08-11 12:04:49.214590004 -0700
++++ linux-4.14.139/fs/nfs/super.c	2026-08-11 11:49:54.920761041 -0700
+@@ -76,6 +76,10 @@
+ #define NFS_DEFAULT_VERSION 2
+ #endif
+ 
++// SLAC change: Default to NFSv4
++#undef NFS_DEFAULT_VERSION
++#define NFS_DEFAULT_VERSION 4
++
+ enum {
+ 	/* Mount options that take no arguments */
+ 	Opt_soft, Opt_hard,
