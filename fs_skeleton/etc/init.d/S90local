@@ -13,6 +13,15 @@ case "$1" in
 			/bin/sh -c "$BOOTCMD"
 			# Continue here and let then also specify a BOOTFILE
 		fi
+		# New path: Parse the boot file out of the kernel parameters.
+		# '(^| )' stops a longer name such as XCMDLINE= from matching as a
+		# suffix -- this value is exec'd below. 'tail -1' follows the kernel's
+		# last-one-wins rule for a repeated parameter.
+		CMDLINE_BOOTFILE=`grep -Eo '(^| )CMDLINE=\S+' /proc/cmdline | tail -1 | cut -d '=' -f2-`
+		if [ -n "$CMDLINE_BOOTFILE" ] ; then
+			BOOTFILE="$CMDLINE_BOOTFILE"
+		fi
+		# Legacy path: Parse boot file out of /etc/bootfile, supplied by DHCP only.
 		if [ -z "$BOOTFILE" -a -r /etc/bootfile ] ; then
 			BOOTFILE=`cat /etc/bootfile`
 		fi
