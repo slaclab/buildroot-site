@@ -157,10 +157,12 @@ case "$1" in
 						mnt   = $3
 					}
 
-					# options chosen by protocol
-					if      (proto == "nfs4.1") opts = "ro,nolock,noresvport,hard,noatime,vers=4.1"
-					else if (proto == "nfs4")   opts = "ro,nolock,noresvport,hard,noatime,vers=4"
-					else                        opts = "ro,nolock,noresvport,noac,soft"
+					# proto only selects the option profile. No vers= is
+					# emitted so mount.nfs can negotiate 4.2 -> 4.1 -> 4.0
+					# -> 3; vers=4 in particular would pin 4.0.
+					# keep this profile identical to the one in S36fstab
+					if (proto ~ /^nfs4/) opts = "timeo=150,retrans=2,ro,nolock,noresvport,hard,noatime"
+					else                 opts = "ro,nolock,noresvport,noac,soft"
 
 					print dev, mnt, "nfs", opts, 0, 0
 				}')
