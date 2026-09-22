@@ -6,6 +6,19 @@
 case "$1" in
   start)
 	echo "Mounting NFS..."
+	# Busybox mount handles any nfs* type itself (see "Might this be an NFS
+	# filesystem?" in util-linux/mount.c): it appends addr= and calls
+	# mount(2) directly. That succeeds, so /sbin/mount.nfs is never spawned
+	# and its version negotiation never runs -- the kernel just takes its
+	# default, giving v3 for nfs and 4.0 for nfs4. Mount the NFS entries
+	# with mount.nfs ourselves to get 4.2 -> 4.1 -> 4.0 -> 3 negotiated.
+	awk '$1 !~ /^#/ && $3 ~ /^nfs/ && $4 !~ /(^|,)noauto(,|$)/ \
+	     { print $1, $2, ($4 == "" ? "defaults" : $4) }' /etc/fstab |
+	while read -r dev mnt opts; do
+		# skip if already mounted, or repeated starts would stack mounts
+		awk -v m="$mnt" '$2 == m { f = 1 } END { exit !f }' /proc/mounts && continue
+		/sbin/mount.nfs "$dev" "$mnt" -o "$opts"
+	done
 	/bin/mount -a
 	;;
   stop)
