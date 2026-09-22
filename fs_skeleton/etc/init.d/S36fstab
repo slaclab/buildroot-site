@@ -5,10 +5,12 @@
 # /proc/cmdline will provide the following parameters:
 #  1. ROOTMNT=SRV:REMOTE_PATH:MNTPT
 #     This defines the mount.
-#  2. ROOTTYPE=nfs|nfs4|nfs4.1...
-#     Defines the file system type (defaults to nfs)
-#  3. ROOTOPTS=vers=4,rw,...
-#     These are mount options
+#  2. ROOTTYPE=nfs|nfs4
+#     Selects the mount option profile (defaults to nfs). It does NOT pin the
+#     protocol version: mount.nfs negotiates 4.2 -> 4.1 -> 4.0 -> 3.
+#  3. ROOTOPTS=rw,...
+#     These are mount options, and replace the profile entirely. An explicit
+#     vers= here defeats negotiation; vers=4 in particular pins 4.0.
 #
 
 case "$1" in
@@ -25,25 +27,19 @@ case "$1" in
         [ -z "${FT}" ] && FT=nfs
 
         case "${FT}" in
-            # Append NFSv4-specific defaults and forces version to 4.1
-            nfs4.1)
+            # nfs4, and legacy nfs4.1 from not-yet-updated boot configs, only
+            # select the v4 option profile. No vers= is emitted so that
+            # mount.nfs is free to negotiate the best version the server
+            # offers. The type is normalised to nfs because mount.nfs never
+            # rewrites it, and -t nfs4 cannot take the final v3 rung.
+            nfs4*)
                 if [ -z "${MO}" ]; then
-                    MO="vers=4.1,timeo=150,ro,nolock,noresvport,hard,noatime"
+                    MO="timeo=150,retrans=2,ro,nolock,noresvport,hard,noatime"
                 fi
-                # nfs4.1 is not a valid mount option
-                FT="nfs4"
+                FT="nfs"
                 ;;
-            # Append NFSv4-specific defaults and let negotiation retrieve the
-            # best version available
-            nfs4)
-                if [ -z "${MO}" ]; then
-                    MO="timeo=150,ro,nolock,noresvport,hard,noatime"
-                fi
-                ;;
-            # NFS v3 needs different parameters. Negotiation with the NFS
-            # server can still mount it as NFS v4. If v4 is really expected,
-            # the recommendation is to use nfs4 or nfs4.1 in ROOTTYPE to get
-            # the right ROOTOPTS.
+            # Conservative options for servers expected to be v3-era. These
+            # still negotiate up to v4 if the server supports it.
             nfs)
                 if [ -z "${MO}" ]; then
                     MO="ro,nolock,noresvport,noac,soft"
