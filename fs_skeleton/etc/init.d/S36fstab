@@ -47,23 +47,24 @@ case "$1" in
 
         [ -z "${FT}" ] && FT=nfs
 
+        # Shared with site.script so both fstab generators agree. Guarded
+        # because sourcing a missing file aborts the script under ash.
+        [ -r /etc/default/nfsprofiles ] && . /etc/default/nfsprofiles
+
         case "${FT}" in
             # nfs4, and legacy nfs4.1 from not-yet-updated boot configs, only
-            # select the v4 option profile. No vers= is emitted so that
-            # mount.nfs is free to negotiate the best version the server
-            # offers. The type is normalised to nfs because mount.nfs never
-            # rewrites it, and -t nfs4 cannot take the final v3 rung.
+            # select the v4 option profile. The type is normalised to nfs
+            # because mount.nfs never rewrites it, and -t nfs4 cannot take
+            # the final v3 rung.
             nfs4*)
                 if [ -z "${MO}" ]; then
-                    MO="timeo=150,retrans=2,ro,nolock,noresvport,hard,noatime"
+                    MO="${NFS_V4_OPTS}"
                 fi
                 FT="nfs"
                 ;;
-            # Conservative options for servers expected to be v3-era. These
-            # still negotiate up to v4 if the server supports it.
             nfs)
                 if [ -z "${MO}" ]; then
-                    MO="ro,nolock,noresvport,noac,soft"
+                    MO="${NFS_V3_OPTS}"
                 fi
                 ;;
             *)

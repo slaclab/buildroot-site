@@ -1,0 +1,14 @@
+# NFS mount option profiles, shared by the two scripts that generate
+# /etc/fstab entries: /etc/init.d/S36fstab (from the ROOTTYPE= kernel
+# parameter) and /usr/share/udhcpc/site.script (from the proto:: prefix of
+# the DHCP root path). Both must agree, hence one definition here.
+#
+# Deliberately no vers= in either profile: mount.nfs then negotiates the
+# best version the server offers (4.2 -> 4.1 -> 4.0 -> 3). Adding vers=
+# defeats that, and vers=4 in particular pins 4.0.
+
+# Servers expected to speak NFSv4. Still negotiates down if they do not.
+NFS_V4_OPTS="timeo=150,retrans=2,ro,nolock,noresvport,hard,noatime"
+
+# Conservative profile for v3-era servers. Still negotiates up to v4.
+NFS_V3_OPTS="ro,nolock,noresvport,noac,soft"
