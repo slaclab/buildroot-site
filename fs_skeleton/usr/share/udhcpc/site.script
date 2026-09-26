@@ -145,8 +145,12 @@ case "$1" in
 		fi
 
 		if [ -n "$IF_ROOTPATH" ] ; then
+			# Shared with S36fstab so both fstab generators agree. Guarded
+			# because sourcing a missing file aborts the script under ash.
+			[ -r /etc/default/nfsprofiles ] && . /etc/default/nfsprofiles
+
 			fsline=$(eval echo "$IF_ROOTPATH" |
-				awk 'BEGIN{FS="[: ]"} {
+				awk -v v4opts="$NFS_V4_OPTS" -v v3opts="$NFS_V3_OPTS" 'BEGIN{FS="[: ]"} {
 					# proto::server:path:mountpoint
 					# "::" will cause $2 to be empty. An IPv6 server
 					# address contains its own "::" and would be
@@ -160,12 +164,9 @@ case "$1" in
 						dev   = $1":"$2
 						mnt   = $3
 					}
-					# proto only selects the option profile. No vers= is
-					# emitted so mount.nfs can negotiate 4.2 -> 4.1 -> 4.0
-					# -> 3; vers=4 in particular would pin 4.0.
-					# keep this profile identical to the one in S36fstab
-					if (proto ~ /^nfs4/) opts = "timeo=150,retrans=2,ro,nolock,noresvport,hard,noatime"
-					else                 opts = "ro,nolock,noresvport,noac,soft"
+					# proto only selects the option profile
+					if (proto ~ /^nfs4/) opts = v4opts
+					else                 opts = v3opts
 					print dev, mnt, "nfs", opts, 0, 0
 				}')
 
