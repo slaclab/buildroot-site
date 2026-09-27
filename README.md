@@ -22,6 +22,11 @@ git submodule.
 
 doc/README.upgradeBuildoot.md details the process of upgrading Buildroot.
 
+## Booting a target
+
+doc/README.boot-parameters.md documents the kernel command line and DHCP
+parameters a target reads to decide what to mount over NFS.
+
 ## Directory Structure
 
 If you prefer the manual approach, below is the step-by-step needed to build
