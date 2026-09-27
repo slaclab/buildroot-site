@@ -29,6 +29,10 @@ function fail {
     exit 1
 }
 
+function yellow {
+    printf "\e[33m"
+}
+
 if ! ping -q -c 1 $1 > $1.log; then
     echo "Host $1 may be down. Ping test failed"
     exit 1
@@ -103,4 +107,31 @@ for lim in c r l; do
     fi
 done
 pass
+
+# Check that something got mounted, then report the versions.
+# We have NFS servers v3, v4.0, and v4.1 running, so there is no single correct
+# answer to assert against.
+printf "Checking for NFS mounts..."
+MOUNTS=$(ssh -o PasswordAuthentication=no laci@$1 "cat /proc/mounts" 2> $1.log) ||
+    fail "Unable to read /proc/mounts on $1"
+
+NFS_MOUNTS=$(printf '%s\n' "$MOUNTS" |
+    awk '$3 ~ /^nfs/ {
+        vers = "no vers="
+        if (match($4, /vers=[0-9.]+/)) vers = "v" substr($4, RSTART + 5, RLENGTH - 5)
+        printf "  %-10s %-10s %s\n", vers, $3, $2
+    }' | sort)
+
+if [ -z "$NFS_MOUNTS" ]; then
+    fail "No NFS mounts found! The image should mount at least one share"
+fi
+pass
+
+echo "$NFS_MOUNTS"
+yellow
+echo "  ^ CHECK: does each version match the best its server supports?"
+echo "    A lower version than expected means negotiation did not happen:"
+echo "    look for a vers= in the mount options, or a mount made by"
+echo "    /bin/mount instead of /sbin/mount.nfs."
+normal
 
