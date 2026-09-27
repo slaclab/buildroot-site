@@ -76,9 +76,12 @@ function check_uid_gid {
     pass
 }
 
-check_uid_gid $1 laci 8412 2211
-check_uid_gid $1 flaci 11121 2376
-check_uid_gid $1 acctf 11846 2459
+# UID and primary GID must match fs_skeleton/etc/passwd. Note that the
+# primary group is 'cd' (1006) for most users: the lcls/facet/acctest groups
+# they belong to are secondary memberships, listed in fs_skeleton/etc/group.
+check_uid_gid $1 laci 8412 1006
+check_uid_gid $1 flaci 11121 1006
+check_uid_gid $1 acctf 11846 1006
 check_uid_gid $1 spear 7753 1080
 
 # Check that chrt works passwordless
